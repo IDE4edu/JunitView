@@ -30,12 +30,12 @@ import org.eclipse.swt.SWT;
  * <p>
  */
 
-public class TestPlugin extends ViewPart {
+public class EduRideJunitView extends ViewPart {
 
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
-	public static final String ID = "plugin.views.TestPlugin";
+	public static final String ID = "plugin.views.EduRideJunitView";
 
 	private TableViewer viewer;
 	private Action action1;
@@ -79,7 +79,7 @@ public class TestPlugin extends ViewPart {
 	/**
 	 * The constructor.
 	 */
-	public TestPlugin() {
+	public EduRideJunitView() {
 	}
 
 	/**
@@ -106,7 +106,7 @@ public class TestPlugin extends ViewPart {
 		menuMgr.setRemoveAllWhenShown(true);
 		menuMgr.addMenuListener(new IMenuListener() {
 			public void menuAboutToShow(IMenuManager manager) {
-				TestPlugin.this.fillContextMenu(manager);
+				EduRideJunitView.this.fillContextMenu(manager);
 			}
 		});
 		Menu menu = menuMgr.createContextMenu(viewer.getControl());

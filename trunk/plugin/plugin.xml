@@ -5,15 +5,15 @@
    <extension
          point="org.eclipse.ui.views">
       <category
-            name="Sample Category"
-            id="plugin">
+            id="edurideJunitView"
+            name="EduRide">
       </category>
       <view
-            name="Test Plugin"
+            name="EduRideJunitView"
             icon="icons/sample.gif"
-            category="plugin"
-            class="plugin.views.TestPlugin"
-            id="plugin.views.TestPlugin">
+            category="edurideJunitView"
+            class="plugin.views.EduRideJunitView"
+            id="plugin.views.EduRideJunitView">
       </view>
    </extension>
    <extension
@@ -24,7 +24,7 @@
                ratio="0.5"
                relative="org.eclipse.ui.views.ProblemView"
                relationship="right"
-               id="plugin.views.TestPlugin">
+               id="plugin.views.EduRideJunitView">
          </view>
       </perspectiveExtension>
    </extension>
