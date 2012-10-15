@@ -2,6 +2,8 @@ package plugin.views;
 
 
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.part.*;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.graphics.Image;
@@ -42,6 +44,9 @@ public class EduRideJunitView extends ViewPart {
 	private Action action2;
 	private Action doubleClickAction;
 
+	private TableColumn assignmentColumn;
+	private TableColumn stepColumn;
+	private TableColumn locationColumn;
 	/*
 	 * The content provider class is responsible for
 	 * providing objects to the view. It can wrap
@@ -58,7 +63,7 @@ public class EduRideJunitView extends ViewPart {
 		public void dispose() {
 		}
 		public Object[] getElements(Object parent) {
-			return new String[] { "One", "Two", "Three" };
+			return new String[] { "Assignment 1", "Two", "Three" };
 		}
 	}
 	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
@@ -82,12 +87,28 @@ public class EduRideJunitView extends ViewPart {
 	public EduRideJunitView() {
 	}
 
+	
 	/**
 	 * This is a callback that will allow us
 	 * to create the viewer and initialize it.
 	 */
 	public void createPartControl(Composite parent) {
-		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		//viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		
+		viewer = new TableViewer(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
+		final Table table = viewer.getTable();
+		assignmentColumn = new TableColumn(table, SWT.LEFT);
+		assignmentColumn.setText("Assignment");
+		assignmentColumn.setWidth(200);
+		stepColumn = new TableColumn(table, SWT.LEFT);
+		stepColumn.setText("Step");
+		stepColumn.setWidth(100);
+		locationColumn = new TableColumn(table, SWT.LEFT);
+		locationColumn.setText("Inputs");
+		locationColumn.setWidth(200);
+		table.setHeaderVisible(true);
+		table.setLinesVisible(false);
+		
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
 		viewer.setSorter(new NameSorter());
