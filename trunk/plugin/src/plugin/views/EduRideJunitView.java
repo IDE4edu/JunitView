@@ -58,9 +58,9 @@ public class EduRideJunitView extends ViewPart {
 	private Action action2;
 	private Action doubleClickAction;
 
-	private TableColumn assignmentColumn;
-	private TableColumn stepColumn;
-	private TableColumn locationColumn;
+	private TableColumn nameColumn;
+	private TableColumn successColumn;
+	private TableColumn messageColumn;
 	/*
 	 * The content provider class is responsible for
 	 * providing objects to the view. It can wrap
@@ -161,15 +161,15 @@ public class EduRideJunitView extends ViewPart {
 		//viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		viewer = new TableViewer(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
 		final Table table = viewer.getTable();
-		assignmentColumn = new TableColumn(table, SWT.LEFT);
-		assignmentColumn.setText("Assignment");
-		assignmentColumn.setWidth(200);
-		stepColumn = new TableColumn(table, SWT.LEFT);
-		stepColumn.setText("Step");
-		stepColumn.setWidth(100);
-		locationColumn = new TableColumn(table, SWT.LEFT);
-		locationColumn.setText("Inputs");
-		locationColumn.setWidth(200);
+		nameColumn = new TableColumn(table, SWT.LEFT);
+		nameColumn.setText("Name");
+		nameColumn.setWidth(200);
+		successColumn = new TableColumn(table, SWT.LEFT);
+		successColumn.setText("Success");
+		successColumn.setWidth(100);
+		messageColumn = new TableColumn(table, SWT.LEFT);
+		messageColumn.setText("Message");
+		messageColumn.setWidth(200);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(false);
 		
@@ -236,6 +236,7 @@ public class EduRideJunitView extends ViewPart {
 	}
 	
 	private void fillLocalToolBar(IToolBarManager manager) {
+		// eventually we'll want a icon here that toggles whether the view changes when the editor changes
 		manager.add(action1);
 		manager.add(action2);
 	}
