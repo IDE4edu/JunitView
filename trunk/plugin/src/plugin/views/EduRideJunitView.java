@@ -60,7 +60,7 @@ public class EduRideJunitView extends ViewPart {
 	private Action doubleClickAction;
 
 	private TableColumn nameColumn;
-	private TableColumn correctColumn;
+	private TableColumn successColumn;
 	private TableColumn messageColumn;
 	/*
 	 * The content provider class is responsible for
@@ -166,13 +166,13 @@ public class EduRideJunitView extends ViewPart {
 		viewer = new TableViewer(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
 		final Table table = viewer.getTable();
 		nameColumn = new TableColumn(table, SWT.LEFT);
-		nameColumn.setText("Assignment");
+		nameColumn.setText("Name");
 		nameColumn.setWidth(200);
-		correctColumn = new TableColumn(table, SWT.LEFT);
-		correctColumn.setText("Step");
-		correctColumn.setWidth(100);
+		successColumn = new TableColumn(table, SWT.LEFT);
+		successColumn.setText("Success");
+		successColumn.setWidth(100);
 		messageColumn = new TableColumn(table, SWT.LEFT);
-		messageColumn.setText("Inputs");
+		messageColumn.setText("Message");
 		messageColumn.setWidth(200);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(false);
@@ -240,6 +240,7 @@ public class EduRideJunitView extends ViewPart {
 	}
 	
 	private void fillLocalToolBar(IToolBarManager manager) {
+		// eventually we'll want a icon here that toggles whether the view changes when the editor changes
 		manager.add(action1);
 		manager.add(action2);
 	}
