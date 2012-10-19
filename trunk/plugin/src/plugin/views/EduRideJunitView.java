@@ -26,6 +26,7 @@ import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.*;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.*;
 
 
 /**
@@ -105,6 +106,7 @@ public class EduRideJunitView extends ViewPart {
 	private PageBook pagebook;
 	private TableViewer tableviewer;
 	private TextViewer textviewer;
+	private Label label;
 	
 	// the listener we register with the selection service 
 	private ISelectionListener listener = new ISelectionListener() {
@@ -158,8 +160,9 @@ public class EduRideJunitView extends ViewPart {
 	 * to create the viewer and initialize it.
 	 */
 	public void createPartControl(Composite parent) {
-		//apple
 		//viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		label = new Label(parent, 0);
+		label.setText("Assignment 1: Something");
 		viewer = new TableViewer(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
 		final Table table = viewer.getTable();
 		nameColumn = new TableColumn(table, SWT.LEFT);
