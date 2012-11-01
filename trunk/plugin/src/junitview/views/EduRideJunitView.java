@@ -1,9 +1,10 @@
-package plugin.views;
+package junitview.views;
 
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.part.*;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -25,7 +26,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.*;
-import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.*;
 
 
@@ -161,9 +161,8 @@ public class EduRideJunitView extends ViewPart {
 	 */
 	public void createPartControl(Composite parent) {
 		//viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		label = new Label(parent, 0);
-		label.setText("Assignment 1: Something");
 		viewer = new TableViewer(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
+		
 		final Table table = viewer.getTable();
 		nameColumn = new TableColumn(table, SWT.LEFT);
 		nameColumn.setText("Name");
@@ -174,14 +173,18 @@ public class EduRideJunitView extends ViewPart {
 		messageColumn = new TableColumn(table, SWT.LEFT);
 		messageColumn.setText("Message");
 		messageColumn.setWidth(200);
+		//TableItem item = new TableItem(table, SWT.NONE);
+	    //item.setText(new String[] { "entire", "row", "red foreground" });
+	    //item.setForeground(red);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(false);
+		
 		
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
 		viewer.setSorter(new NameSorter());
 		viewer.setInput(getViewSite());
-
+		
 		// Create the help context id for the viewer's control
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(viewer.getControl(), "plugin.viewer");
 		makeActions();

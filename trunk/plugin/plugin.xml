@@ -12,7 +12,7 @@
             name="EduRideJunitView"
             icon="icons/sample.gif"
             category="edurideJunitView"
-            class="plugin.views.EduRideJunitView"
+            class="junitview.views.EduRideJunitView"
             id="plugin.views.EduRideJunitView">
       </view>
    </extension>
