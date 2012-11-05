@@ -7,14 +7,22 @@ import java.util.HashSet;
 
 public class TestList {
 	
-	HashSet mTestResults;
-	ArrayList<Method> mtestMethods = new ArrayList<Method>();
+	HashSet<TestResult> mTestResults;
+	ArrayList<Method> mTestMethods = new ArrayList<Method>();
 	
 	public TestList(Class<?> JUnitTestClass){
 		Method[] methods = JUnitTestClass.getMethods();
+		
+		// find all the methods with @Test Annotation
 		for (Method method: methods){
-			if (isTestMethod(method)) mtestMethods.add(method);
-		}		
+			if (isTestMethod(method)) mTestMethods.add(method);
+		}
+		
+		// convert these to TestResults
+		// TODO add error checking. For now, we're assuming they all have Names and descriptions
+		for (Method method: mTestMethods){
+			mTestResults.add(new TestResult(method));
+		}
 	}
 	
 	private boolean isTestMethod(Method m){
@@ -26,7 +34,4 @@ public class TestList {
 		}
 		return false;
 	}
-	
-	String getName(){return "";};
-	void setName(){};
 }
