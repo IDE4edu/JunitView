@@ -7,7 +7,7 @@ import java.util.HashSet;
 
 public class TestList {
 	
-	HashSet<TestResult> mTestResults;
+	HashSet<TestResult> mTestResults = new HashSet<TestResult>();
 	ArrayList<Method> mTestMethods = new ArrayList<Method>();
 	
 	public TestList(Class<?> JUnitTestClass){
@@ -33,5 +33,12 @@ public class TestList {
 			}
 		}
 		return false;
+	}
+	
+	public static void main(String [ ] args) {
+		TestList x = new TestList(SquareTest.class);
+		HashSet<TestResult> mTestResults = x.mTestResults;
+		ArrayList<Method> mTestMethods = x.mTestMethods;
+		int sd = 9;
 	}
 }
