@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.*;
 
 import org.junit.internal.TextListener;
 import org.junit.runner.Description;
@@ -31,6 +33,13 @@ public class EduRideRunTests {
 	public static void getResults(Class<SquareTest> passedTestClass){
 		JUnitCore core = new JUnitCore();  
 		MyListener mListerner = new MyListener();
+		//Class a[] = new Class[0];
+		Method[] ms = passedTestClass.getMethods();
+		Method m = ms[1];
+		Annotation[] as = m.getAnnotations();
+		
+		
+		
 		core.addListener(mListerner);   
 		core.run(SquareTest.class);
 		for (Description d: mListerner.succeeded){
