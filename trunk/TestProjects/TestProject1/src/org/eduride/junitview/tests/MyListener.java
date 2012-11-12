@@ -1,3 +1,4 @@
+package org.eduride.junitview.tests;
 import java.util.ArrayList;
 import java.util.HashSet;
 

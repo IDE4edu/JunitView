@@ -1,3 +1,4 @@
+package org.eduride.junitview.tests;
 public class Square {
 	
 	int height;
