@@ -1,3 +1,4 @@
+package org.eduride.junitview.tests;
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
 
