@@ -34,4 +34,8 @@ public class TestList {
 		}
 		return false;
 	}
+	
+	public Object getTestList(){
+		return mTestResults;
+	}
 }

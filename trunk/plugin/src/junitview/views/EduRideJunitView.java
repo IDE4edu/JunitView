@@ -1,10 +1,15 @@
 package junitview.views;
 
+//import org.eduride.junitview.tests.*;
 
 import junitview.controller.ResultSorter;
 import junitview.controller.ViewContentProvider;
 import junitview.controller.ViewLabelProvider;
+import junitview.model.TestList;
+import junitview.model.TestResult;
 
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -134,15 +139,21 @@ public class EduRideJunitView extends ViewPart {
 		super.dispose();
 	}
 		
+	
 	/**
 	 * This is a callback that will allow us
 	 * to create the viewer and initialize it.
 	 */
 	public void createPartControl(Composite parent) {
 		//viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		viewer = new TableViewer(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
+		//viewer = new TableViewer(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
 		
-		final Table table = viewer.getTable();
+		//createColumns(parent);
+		
+		//final Table table = viewer.getTable();
+		//table.setHeaderVisible(true);
+		//table.setLinesVisible(true);
+		/*
 		nameColumn = new TableColumn(table, SWT.LEFT);
 		nameColumn.setText("Name");
 		nameColumn.setWidth(200);
@@ -159,11 +170,21 @@ public class EduRideJunitView extends ViewPart {
 		table.setLinesVisible(false);
 		
 		
-		viewer.setContentProvider(new ViewContentProvider(this));
+		//viewer.setContentProvider(new ViewContentProvider(this));
+		viewer.setContentProvider(new ArrayContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider(this));
 		viewer.setSorter(new ResultSorter(this));
-		viewer.setInput(getViewSite());
+		//viewer.setInput(getViewSite());
+		*/
 		
+		GridLayout layout = new GridLayout(2, false);
+	    parent.setLayout(layout);
+	    //Label searchLabel = new Label(parent, SWT.NONE);
+	    //searchLabel.setText("Search: ");
+	    //final Text searchText = new Text(parent, SWT.BORDER | SWT.SEARCH);
+	    //searchText.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
+	    //    | GridData.HORIZONTAL_ALIGN_FILL));
+	    createViewer(parent);
 		// Create the help context id for the viewer's control
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(viewer.getControl(), "plugin.viewer");
 		makeActions();
@@ -189,6 +210,150 @@ public class EduRideJunitView extends ViewPart {
 		
 	}
 
+	private void createViewer(Composite parent) {
+	    viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
+	        | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER);
+	    createColumns(parent, viewer);
+	    final Table table = viewer.getTable();
+	    table.setHeaderVisible(true);
+	    table.setLinesVisible(true);
+
+	    viewer.setContentProvider(new ArrayContentProvider());
+	    // Get the content for the viewer, setInput will call getElements in the
+	    // contentProvider
+	    Class<?> c = junitview.tests.SquareTest.class;
+	    TestList temp = new TestList(c);
+	    viewer.setInput(temp.getTestList());
+	    // Make the selection available to other views
+	    getSite().setSelectionProvider(viewer);
+	    // Set the sorter for the table
+
+	    // Layout the viewer
+	    GridData gridData = new GridData();
+	    gridData.verticalAlignment = GridData.FILL;
+	    gridData.horizontalSpan = 2;
+	    gridData.grabExcessHorizontalSpace = true;
+	    gridData.grabExcessVerticalSpace = true;
+	    gridData.horizontalAlignment = GridData.FILL;
+	    viewer.getControl().setLayoutData(gridData);
+	  }
+
+	  public TableViewer getViewer() {
+	    return viewer;
+	  }
+	/*
+	private void createColumns(final Composite parent, final TableViewer viewer) {
+	    String[] titles = { "First name", "Last name", "Gender", "Married" };
+	    int[] bounds = { 100, 100, 100, 100 };
+
+	    // First column is for the first name
+	    TableViewerColumn col = createTableViewerColumn(titles[0], bounds[0], 0);
+	    col.setLabelProvider(new CellLabelProvider() {
+	      @Override
+	      public void update(ViewerCell cell) {
+	        cell.setText(((Person) cell.getElement()).getFirstName());
+	      }
+	    });
+	    col.setEditingSupport(new FirstNameEditingSupport(viewer));
+
+	    // Second column is for the last name
+	    col = createTableViewerColumn(titles[1], bounds[1], 1);
+	    col.setLabelProvider(new CellLabelProvider() {
+	      @Override
+	      public void update(ViewerCell cell) {
+	        cell.setText(((Person) cell.getElement()).getLastName());
+	      }
+	    });
+	    col.setEditingSupport(new LastNameEditingSupport(viewer));
+
+	    // Now the gender
+	    col = createTableViewerColumn(titles[2], bounds[2], 2);
+	    col.setLabelProvider(new ColumnLabelProvider() {
+	      @Override
+	      public String getText(Object element) {
+	        Person p = (Person) element;
+	        return p.getGender();
+	      }
+	    });
+	    col.setEditingSupport(new GenderEditingSupport(viewer));
+
+	    // // Now the status married
+	    col = createTableViewerColumn(titles[3], bounds[3], 3);
+	    col.setLabelProvider(new ColumnLabelProvider() {
+	      @Override
+	      public String getText(Object element) {
+	        return null;
+	      }
+
+	      @Override
+	      public Image getImage(Object element) {
+	        if (((Person) element).isMarried()) {
+	          return CHECKED;
+	        } else {
+	          return UNCHECKED;
+	        }
+	      }
+	    });
+	    col.setEditingSupport(new MarriedEditingSupport(viewer));
+
+	  }*/
+	  private void createColumns(final Composite parent, final TableViewer viewer) {
+		    String[] titles = { "Name", "Description" };
+		    int[] bounds = { 100, 100 };
+
+		    // First column is for the first name
+		    TableViewerColumn col = createTableViewerColumn(titles[0], bounds[0], 0);
+		    col.setLabelProvider(new ColumnLabelProvider() {
+		      @Override
+		      public String getText(Object element) {
+		        TestResult t = (TestResult) element;
+		        return t.getName();
+		      }
+		    });
+
+		    // Second column is for the last name
+		    col = createTableViewerColumn(titles[1], bounds[1], 1);
+		    col.setLabelProvider(new ColumnLabelProvider() {
+		      @Override
+		      public String getText(Object element) {
+		        TestResult p = (TestResult) element;
+		        return p.getDescription();
+		      }
+		    });
+
+		    /*
+		    // // Now the status married
+		    col = createTableViewerColumn(titles[3], bounds[3], 3);
+		    col.setLabelProvider(new ColumnLabelProvider() {
+		      @Override
+		      public String getText(Object element) {
+		        return null;
+		      }
+		      
+		      @Override
+		      public Image getImage(Object element) {
+		        if (((TestResult) element).isMarried()) {
+		          return CHECKED;
+		        } else {
+		          return UNCHECKED;
+		        }
+		      }
+		    });*/
+
+		  }
+	
+	private TableViewerColumn createTableViewerColumn(String title, int bound, final int colNumber) {
+	    final TableViewerColumn viewerColumn = new TableViewerColumn(viewer,
+	        SWT.NONE);
+	    final TableColumn column = viewerColumn.getColumn();
+	    column.setText(title);
+	    column.setWidth(bound);
+	    column.setResizable(true);
+	    column.setMoveable(true);
+	    return viewerColumn;
+	  }
+
+	
 	private void hookContextMenu() {
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(true);
