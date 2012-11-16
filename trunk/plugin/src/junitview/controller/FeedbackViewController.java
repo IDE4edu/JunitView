@@ -24,6 +24,8 @@ public class FeedbackViewController {
 	 *  - test suite doesn't compile.
 	 */
 	public String getViewTitle() {
+		// ask Andrea + Jerry's stuff for the current target class 
+		// return the name of the class or the error string
 		return "SquareTest";
 	}
 	
