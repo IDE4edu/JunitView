@@ -4,10 +4,15 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.junit.runner.JUnitCore;
+
 public class TestResult {
 	
 	private String mName;
 	private String mDescription;
+	private boolean success;
+	private String expected;
+	private String observed;
 	
 	public TestResult(Method testMethod){
 		Annotation[] annotations = testMethod.getAnnotations();
@@ -54,5 +59,21 @@ public class TestResult {
 	
 	public String getDescription(){
 		return mDescription;
+	}
+	
+	public boolean getSuccess(){
+		return success;
+	}
+	
+	public String getExpected(){
+		return expected;
+	}
+	
+	public boolean hasObserved(){
+		return observed != null;
+	}
+	
+	public String getObserved(){
+		return observed;
 	}
 }
