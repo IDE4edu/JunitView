@@ -14,7 +14,7 @@ public class TestResult {
 	
 	// TODO THIS ASSUMES THERE IS ONLY ONE ASSERT STATEMENT PER @TEST ANNOTATION
 
-	private String mName, mMethodCall, mDescription;
+	private String mMethodName, mMethodCall, mDescription;
 	public boolean success;
 	private String expected;
 	private String observed;
@@ -27,7 +27,7 @@ public class TestResult {
 		
 		Annotation[] annotations = testMethod.getAnnotations();
 
-		this.mName = testMethod.getName();
+		this.mMethodName = testMethod.getName();
 
 		for (Annotation annotation: annotations){
 			// TODO this loop is wonky, sez nate
@@ -59,7 +59,7 @@ public class TestResult {
 		JUnitCore core = new JUnitCore();  
 		MyListener mListener = new MyListener();
 		core.addListener(mListener);
-		Request request = Request.method(this.JUnitTestClass, mName);
+		Request request = Request.method(this.JUnitTestClass, mMethodName);
 		core.run(request);
 		if (!mListener.succeeded.isEmpty()){
 			this.success = true;
@@ -69,7 +69,7 @@ public class TestResult {
 			Failure f = mListener.failed.get(0);
 			this.failMessage = f.getMessage();
 			
-			String regex = mName + " failed expected:<(.*)> but was:<(.*)>";
+			String regex = " failed expected:<(.*)> but was:<(.*)>";
 
 			Pattern p = Pattern.compile(regex,Pattern.DOTALL);
 			Matcher m = p.matcher(failMessage);
@@ -107,10 +107,19 @@ public class TestResult {
 		}
 	}
 
+	// returns methodCall if it exists, or methodName if not
 	public String getName(){
-		return mName;
+		if (getMethodCall() != null) {
+			return getMethodCall();
+		} else {
+			return getMethodName();
+		}
 	}
 
+	public String getMethodName() {
+		return mMethodName;
+	}
+	
 	public boolean hasDescription(){
 		return mDescription != null;
 	}
