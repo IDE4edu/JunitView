@@ -4,28 +4,35 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.junit.runner.JUnitCore;
-
 public class TestResult {
 	
 	private String mName;
+	private String mMethodCall;
 	private String mDescription;
-	private boolean success;
+	public boolean success;
 	private String expected;
 	private String observed;
+	private boolean hideWhenSuccessful = false;
 	
 	public TestResult(Method testMethod){
 		Annotation[] annotations = testMethod.getAnnotations();
 		
+		this.mName = testMethod.getName();
+		
 		for (Annotation annotation: annotations){
-			String mName = extractAnnotationValue(annotation, "Name", "value");
-			if (mName != null){
-				this.mName = mName;
+			String mMethodCall = extractAnnotationValue(annotation, "MethodCall", "value");
+			if (mMethodCall != null){
+				this.mMethodCall = mMethodCall;
 				continue;
 			}
 			String mDescription = extractAnnotationValue(annotation, "Description", "value");
 			if (mDescription != null) {
 				this.mDescription = mDescription;
+				continue;
+			}
+			String hideWhenSuccessful = extractAnnotationValue(annotation, "hideWhenSuccessful", "value");
+			if (hideWhenSuccessful!= null && hideWhenSuccessful.trim().toLowerCase().equals("true")) {
+				this.hideWhenSuccessful = true;
 				continue;
 			}
 		}
@@ -57,12 +64,20 @@ public class TestResult {
 		return mName;
 	}
 	
+	public boolean hasDescription(){
+		return mDescription != null;
+	}
+	
 	public String getDescription(){
 		return mDescription;
 	}
 	
 	public boolean getSuccess(){
 		return success;
+	}
+	
+	public boolean hasExpected(){
+		return expected != null;
 	}
 	
 	public String getExpected(){
@@ -75,5 +90,14 @@ public class TestResult {
 	
 	public String getObserved(){
 		return observed;
+	}
+	
+	public String getMethodCall(){
+		return mMethodCall;
+	}
+	
+	public boolean hideWhenSuccessful(){
+		// if the annotation for hideWhenSuccessful exists, return true, otherwise false
+		return false;
 	}
 }
