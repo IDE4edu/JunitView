@@ -9,11 +9,11 @@ import org.junit.runner.notification.RunListener;
 // http://jorgemanrubia.net/2008/09/18/generating-junit-test-cases-dynamically/
 // http://junit.sourceforge.net/javadoc/org/junit/runner/notification/RunListener.html#testFinished%28org.junit.runner.Description%29
 public class MyListener extends RunListener{
-	public ArrayList<Description> failed;
+	public ArrayList<Failure> failed;
 	public ArrayList<Description> succeeded;
 	
 	public MyListener(){
-		this.failed = new ArrayList<Description>();
+		this.failed = new ArrayList<Failure>();
 		this.succeeded = new ArrayList<Description>();
 	}
 	
@@ -21,8 +21,7 @@ public class MyListener extends RunListener{
 		succeeded.add(d);
 	}
 	public void testFailure(Failure f){
-		Description d = f.getDescription();
-		failed.add(d);
-		succeeded.remove(d);
+		failed.add(f);
+		succeeded.remove(f.getDescription());
 	}
 }
