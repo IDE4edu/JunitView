@@ -4,8 +4,11 @@ package org.eduride.junitview.tests.lib;
 
 //import org.junit.Assert;
 
+
+// Eh, this would work, but not a good idea.
 public class EduRideAssert extends org.junit.Assert {
 
+	
 	public static void assertEquals(String msg, java.lang.Object expected,
 			java.lang.Object observed) throws EduRideAssertionError{
 		
