@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
+import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 
 public class TestResult {
@@ -20,9 +21,16 @@ public class TestResult {
 	private String observed;
 	private boolean hideWhenSuccessful = false;
 	private String failMessage = null;
+	private java.lang.Throwable exception = null;
+	
 	private Class<?> JUnitTestClass;
+	private JUnitCore listJUnitCore;
+	private Request myRequest;
 
-	public TestResult(Class<?> JUnitTestClass, Method testMethod){
+	public TestResult(Class<?> JUnitTestClass, Method testMethod, JUnitCore listjunitcore) {
+		// TODO add error checking. For now, we're assuming they all
+		// have Names and descriptions
+		
 		this.JUnitTestClass = JUnitTestClass;
 		
 		Annotation[] annotations = testMethod.getAnnotations();
@@ -52,37 +60,9 @@ public class TestResult {
 				continue;
 			}
 		}
-	}
-
-	public void run(){
 		
-		JUnitCore core = new JUnitCore();  
-		MyListener mListener = new MyListener();
-		core.addListener(mListener);
-		Request request = Request.method(this.JUnitTestClass, mMethodName);
-		core.run(request);
-		if (!mListener.succeeded.isEmpty()){
-			this.success = true;
-			this.observed = this.expected;
-		} else {
-			// There should only be ONE failure
-			Failure f = mListener.failed.get(0);
-			this.failMessage = f.getMessage();
-			
-			String regex = " failed expected:<(.*)> but was:<(.*)>";
-
-			Pattern p = Pattern.compile(regex,Pattern.DOTALL);
-			Matcher m = p.matcher(failMessage);
-
-			if (m.find()){
-				this.expected = m.group(1);
-			} else{
-				this.observed = null;
-			}
-			if (m.find()){
-				this.observed = m.group(1);
-			}
-		}
+		this.listJUnitCore = listjunitcore;
+		this.myRequest = Request.method(JUnitTestClass, mMethodName);
 	}
 
 	private String extractAnnotationValue(Annotation annotation, String annotationName, String attributeName) {
@@ -107,6 +87,46 @@ public class TestResult {
 		}
 	}
 
+
+	
+	public void run(){
+		// run the single test
+		Result res = listJUnitCore.run(myRequest);
+		
+		if (res.wasSuccessful()) {
+			this.success = true;
+			this.observed = this.expected;
+//		} else if(res.getFailureCount() != 1) {
+//			//uh oh
+		} else {
+			// There should only be ONE failure
+			Failure f = res.getFailures().get(0);
+			
+			this.exception = f.getException();
+			
+			this.failMessage = f.getMessage();
+			String regex = " failed expected:<(.*)> but was:<(.*)>";
+
+			Pattern p = Pattern.compile(regex,Pattern.DOTALL);
+			Matcher m = p.matcher(failMessage);
+
+			if (m.find()){
+				this.expected = m.group(1);
+			} else{
+				this.observed = null;
+			}
+			if (m.find()){
+				this.observed = m.group(1);
+			}
+		}
+	}
+
+	
+	
+	
+	////  getters
+	
+	
 	// returns methodCall if it exists, or methodName if not
 	public String getName(){
 		if (getMethodCall() != null) {
