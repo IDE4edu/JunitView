@@ -1,5 +1,7 @@
 package junitview.controller;
 
+import java.util.HashMap;
+
 import junitview.views.EduRideJunitView;
 import junitview.model.TestList;
 import junitview.tests.*;
@@ -36,9 +38,15 @@ public class FeedbackViewController {
 	 * or a TestList
 	 */
 	public TestList getTestList() {
-
-		TestList t = new TestList(SquareTest.class);
-		return t;
+		HashMap<Class<?>,TestList> dict = new HashMap<Class<?>,TestList>();
+		Class<?> c = SquareTest.class; // to be replaced later
+		if (dict.containsKey(c)) {
+			return dict.get(c);
+		} else {
+			TestList t = new TestList(c);
+			dict.put(c, t);
+			return t;
+		}
 	}
 	
 	

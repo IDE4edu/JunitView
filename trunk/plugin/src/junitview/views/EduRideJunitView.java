@@ -2,17 +2,16 @@ package junitview.views;
 
 //import org.eduride.junitview.tests.*;
 
-import junitview.controller.ResultSorter;
-import junitview.controller.ViewContentProvider;
-import junitview.controller.ViewLabelProvider;
-import junitview.model.TestList;
-import junitview.model.TestResult;
+import junitview.controller.*;
+import junitview.model.*;
+import studentview.model.Step;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -71,6 +70,7 @@ public class EduRideJunitView extends ViewPart {
 	private Action doubleClickAction;
 
 	//private Observer observe;
+	private final FeedbackViewController feedback= new FeedbackViewController(this);
 	private final Device device = Display.getCurrent();
 	private Color white = new Color(device,255,255,255);
     private Color gray = new Color(device,190,190,190);
@@ -111,7 +111,7 @@ public class EduRideJunitView extends ViewPart {
 	 * Shows the given selection in this view.
 	 */
 	public void showSelection(IWorkbenchPart sourcepart, ISelection selection) {
-		setContentDescription(sourcepart.getTitle() + " (" + selection.getClass().getName() + ")");
+		//setContentDescription(sourcepart.getTitle() + " (" + selection.getClass().getName() + ")");
 		if (selection instanceof IStructuredSelection) {
 			IStructuredSelection ss = (IStructuredSelection) selection;
 			showItems(ss.toArray());
@@ -177,6 +177,39 @@ public class EduRideJunitView extends ViewPart {
 		
 	}
 
+	//what step changed to
+	void stepChanged(Step step){
+		Table table = viewer.getTable();
+	    if (feedback.getTestList()!=null){
+	    	setContentDescription(feedback.getViewTitle());
+	    	table.setBackground(white);
+	    	table.setForeground(black);
+	    } else {
+	    	setContentDescription(feedback.getViewTitle()+": No associated test suite");
+	    	table.setBackground(gray);
+	    	table.setForeground(gray);
+	    }
+	    invokeTest();
+	}
+	
+	void invokeTest(){
+		 TestList feed = feedback.getTestList();
+		 feed.runTests();
+		 viewer.setInput(feed.getTestList());
+		 // Make the selection available to other views
+		 getSite().setSelectionProvider(viewer);
+		 // Set the sorter for the table
+		 
+		 // Layout the viewer
+		 GridData gridData = new GridData();
+		 gridData.verticalAlignment = GridData.FILL;
+		 gridData.horizontalSpan = 2;
+		 gridData.grabExcessHorizontalSpace = true;
+		 gridData.grabExcessVerticalSpace = true;
+		 gridData.horizontalAlignment = GridData.FILL;
+		 viewer.getControl().setLayoutData(gridData);
+	}
+	
 	private void createViewer(Composite parent) {
 	    viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
 	        | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER);
@@ -184,44 +217,19 @@ public class EduRideJunitView extends ViewPart {
 	    final Table table = viewer.getTable();
 	    table.setHeaderVisible(true);
 	    table.setLinesVisible(true);
-
+	    
 	    viewer.setContentProvider(new ArrayContentProvider());
 	    // Get the content for the viewer, setInput will call getElements in the
 	    // contentProvider
-	    Class<?> c = junitview.tests.SquareTest.class;
-	    TestList temp = new TestList(c);
-	    if (/*temp.hasTestList()*/true){
-	    	//possibly ask testlist for name
-	    	setContentDescription(/*name+*/": ");
-	    	table.setBackground(white);
-	    	table.setForeground(black);
-	    	viewer.setInput(temp.getTestList());
-	    } else {
-	    	//possibly ask testlist for name
-	    	setContentDescription(/*name+*/": No associated test suite");
-	    	table.setBackground(gray);
-	    	table.setForeground(gray);
-	    	viewer.setInput(null);
-	    }
-	    // Make the selection available to other views
-	    getSite().setSelectionProvider(viewer);
-	    // Set the sorter for the table
-
-	    // Layout the viewer
-	    GridData gridData = new GridData();
-	    gridData.verticalAlignment = GridData.FILL;
-	    gridData.horizontalSpan = 2;
-	    gridData.grabExcessHorizontalSpace = true;
-	    gridData.grabExcessVerticalSpace = true;
-	    gridData.horizontalAlignment = GridData.FILL;
-	    viewer.getControl().setLayoutData(gridData);
+	    stepChanged(null);
+	    
 	    
 	  }
 
 	  public TableViewer getViewer() {
 	    return viewer;
 	  }
-
+	  
 	  private void createColumns(final Composite parent, final TableViewer viewer) {
 		    String[] titles = {"Success", "Name", "Description", "Expected", "Observed" };
 		    int[] bounds = { 100, 100, 100, 100, 100 };
@@ -231,6 +239,9 @@ public class EduRideJunitView extends ViewPart {
 		      @Override
 		      public String getText(Object element) {
 		    	TestResult t = (TestResult) element;
+		    	if (t.getSuccess()&&t.hideWhenSuccessful()){
+		    		//self.getParent();
+		    	}
 		    	if (t.getSuccess()) {
 		    		return "Correct";
 		    	} else {
@@ -256,7 +267,8 @@ public class EduRideJunitView extends ViewPart {
 		    	return t.getName();
 		      }
 		    });
-
+/***********DESCRIPTION IS GOING TO BE A TOOLTIP*/
+		    
 		    // Second column is the description
 		    col = createTableViewerColumn(titles[2], bounds[2], 2);
 		    col.setLabelProvider(new ColumnLabelProvider() {
@@ -266,7 +278,7 @@ public class EduRideJunitView extends ViewPart {
 			    return t.getDescription();
 		      }
 		    });
-		    
+/*******/		    
 		    col = createTableViewerColumn(titles[3], bounds[3], 3);
 		    col.setLabelProvider(new ColumnLabelProvider() {
 		      @Override
