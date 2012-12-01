@@ -4,6 +4,8 @@ package junitview.views;
 
 import junitview.controller.*;
 import junitview.model.*;
+import studentview.controller.NavigationListener;
+import studentview.NavigatorActivator;
 import studentview.model.Step;
 
 import org.eclipse.swt.graphics.Color;
@@ -57,8 +59,8 @@ import org.eclipse.swt.widgets.*;
  * <p>
  */
 
-public class EduRideJunitView extends ViewPart {
-
+public class EduRideJunitView extends ViewPart implements NavigationListener {
+	
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
@@ -91,6 +93,8 @@ public class EduRideJunitView extends ViewPart {
 	 * The constructor.
 	 */
 	public EduRideJunitView() {
+		super();
+		NavigatorActivator.getDefault().registerListener(this);
 	}
 
 	private PageBook pagebook;
@@ -178,27 +182,40 @@ public class EduRideJunitView extends ViewPart {
 	}
 
 	//what step changed to
-	void stepChanged(Step step){
+	public void stepChanged(Step step){
 		Table table = viewer.getTable();
-	    if (feedback.getTestList()!=null){
-	    	setContentDescription(feedback.getViewTitle());
+		Class<?> c;
+		if (step != null){
+			c = step.getTestClass();
+			setContentDescription(feedback.getViewTitle(step));
 	    	table.setBackground(white);
 	    	table.setForeground(black);
-	    } else {
-	    	setContentDescription(feedback.getViewTitle()+": No associated test suite");
+		} else {
+			c = null;
+			setContentDescription(feedback.getViewTitle(step)+": No associated test suite");
 	    	table.setBackground(gray);
 	    	table.setForeground(gray);
-	    }
-	    invokeTest();
+		}
+	    invokeTest(c);
 	}
 	
-	void invokeTest(){
-		 TestList feed = feedback.getTestList();
-		 feed.runTests();
-		 viewer.setInput(feed.getTestList());
+	public void invokeTest(Class<?> c){
+		 TestList feed = feedback.getTestList(c);
+		 if (c != null){
+			 feed.runTests();
+			 viewer.setInput(feed.getTestList());
+		 } else {
+			 viewer.setInput(null);
+		 }
 		 // Make the selection available to other views
 		 getSite().setSelectionProvider(viewer);
 		 // Set the sorter for the table
+		 viewer.addFilter(new ViewerFilter() {
+			 public boolean select(Viewer viewer, Object parentElement,Object element) {
+				 TestResult t = (TestResult)element;
+				 return t.getSuccess() && !t.hideWhenSuccessful();
+			 }
+		 });
 		 
 		 // Layout the viewer
 		 GridData gridData = new GridData();
@@ -239,9 +256,6 @@ public class EduRideJunitView extends ViewPart {
 		      @Override
 		      public String getText(Object element) {
 		    	TestResult t = (TestResult) element;
-		    	if (t.getSuccess()&&t.hideWhenSuccessful()){
-		    		//self.getParent();
-		    	}
 		    	if (t.getSuccess()) {
 		    		return "Correct";
 		    	} else {

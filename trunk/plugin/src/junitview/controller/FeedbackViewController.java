@@ -2,21 +2,21 @@ package junitview.controller;
 
 import java.util.HashMap;
 
+import studentview.model.Step;
+
 import junitview.views.EduRideJunitView;
 import junitview.model.TestList;
 import junitview.tests.*;
 
 public class FeedbackViewController {
-
-	EduRideJunitView view;
-	
+	private EduRideJunitView view;
+	private HashMap<Class<?>,TestList> dict = new HashMap<Class<?>,TestList>();
 	
 	public FeedbackViewController(EduRideJunitView view) {
 		super();
 		this.view = view;
 	}
 	
-
 
 	/*
 	 * Returns title for view, either name of class or an error string
@@ -25,10 +25,17 @@ public class FeedbackViewController {
 	 *  - target class has no test suite associated with it
 	 *  - test suite doesn't compile.
 	 */
-	public String getViewTitle() {
+	public String getViewTitle(Step step) {
 		// ask Andrea + Jerry's stuff for the current target class 
 		// return the name of the class or the error string
-		return "SquareTest";
+		if (step != null){
+			return step.getFilename();
+		} else {
+			return "";
+		}
+		//return c.getName();
+		//return step.getName();
+		
 	}
 	
 	
@@ -37,9 +44,9 @@ public class FeedbackViewController {
 	 * return null if there is a problem (doesn't compile, etc) -- test area is grey in view --
 	 * or a TestList
 	 */
-	public TestList getTestList() {
-		HashMap<Class<?>,TestList> dict = new HashMap<Class<?>,TestList>();
-		Class<?> c = SquareTest.class; // to be replaced later
+	
+	public TestList getTestList(Class<?> c) {
+		if (c == null) return null;
 		if (dict.containsKey(c)) {
 			return dict.get(c);
 		} else {
@@ -48,8 +55,6 @@ public class FeedbackViewController {
 			return t;
 		}
 	}
-	
-	
 	
 	//TODO 
 	
