@@ -26,6 +26,11 @@ public class TestResult {
 	private Class<?> JUnitTestClass;
 	private JUnitCore listJUnitCore;
 	private Request myRequest;
+	
+	private final String assertArrayEqualsRegex = "arrays first differed at element \\[[0-9]+\\]; expected:<(.*)> but was:<(.*)>";
+	private final String assertEqualsRegex = "expected:<(.*)> but was:<(.*)>";
+	private final String assertSameRegex = "expected same:<(.*)> was not:<(.*)>";
+	private final String[] regexArray = { assertArrayEqualsRegex, assertEqualsRegex, assertSameRegex };
 
 	public TestResult(Class<?> JUnitTestClass, Method testMethod, JUnitCore listjunitcore) {
 		// TODO add error checking. For now, we're assuming they all
@@ -96,8 +101,9 @@ public class TestResult {
 		if (res.wasSuccessful()) {
 			this.success = true;
 			this.observed = this.expected;
-//		} else if(res.getFailureCount() != 1) {
-//			//uh oh
+		} else if(res.getFailureCount() != 1) {
+			System.err.println("TestResult " + mMethodName + " had more than 1 error");
+			System.exit(1);
 		} else {
 			// There should only be ONE failure
 			Failure f = res.getFailures().get(0);
@@ -105,18 +111,22 @@ public class TestResult {
 			this.exception = f.getException();
 			
 			this.failMessage = f.getMessage();
-			String regex = " failed expected:<(.*)> but was:<(.*)>";
-
-			Pattern p = Pattern.compile(regex,Pattern.DOTALL);
-			Matcher m = p.matcher(failMessage);
-
-			if (m.find()){
-				this.expected = m.group(1);
-			} else{
-				this.observed = null;
+			if (failMessage == null){
+				// this is assertTrue, assertFalse, assertNull, assertNotNull, fail
+				// without a message. So return.
+				return;
 			}
-			if (m.find()){
-				this.observed = m.group(1);
+
+			for (String regex : regexArray){
+				Pattern p = Pattern.compile(regex,Pattern.DOTALL);
+				Matcher m = p.matcher(failMessage);
+
+				if (m.find()){
+					this.expected = m.group(1);
+					this.observed = m.group(2);
+					// if it finds a match, stop looking.
+					continue;
+				}
 			}
 		}
 	}

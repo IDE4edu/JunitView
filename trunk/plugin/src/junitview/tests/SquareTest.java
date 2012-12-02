@@ -11,6 +11,33 @@ public class SquareTest {
 	@Test
 	@MethodCall("new Square(5).area()")
 	@hideWhenSuccessful
+	@Description("BLAHBLAHBLAH")
+	public void testAssertSame() {
+		assertSame("assertSame failed", 1,2);
+	}
+
+	@Test
+	@MethodCall("new Square(5).area()")
+	@hideWhenSuccessful
+	@Description("BLAHBLAHBLAH")
+	public void testAssertArrayEquals() {
+		int[] x = {1,2,3,4,5,6,7,8,8,0};
+		int[] y = {1,2,3,4,5,6,7,8,9,0};
+		assertArrayEquals("assertArrayEquals failed", x,y);
+	}
+	
+	@Test
+	@MethodCall("new Square(5).area()")
+	@hideWhenSuccessful
+	@Description("BLAHBLAHBLAH")
+	public void testAssertTrue() {
+		int obs = new Square(5).area();
+		assertTrue("assertTrue failed", 25 == obs);
+	}
+	
+	@Test
+	@MethodCall("new Square(5).area()")
+	@hideWhenSuccessful
 	@Expected("25")
 	@Description("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse magna mauris, tincidunt sed mattis eu, tempus vitae lorem. In scelerisque justo nec sem gravida sed congue lacus hendrerit. Mauris non ligula at dui sagittis vulputate in et turpis. Maecenas vel diam lorem")
 	public void testArea1() {
