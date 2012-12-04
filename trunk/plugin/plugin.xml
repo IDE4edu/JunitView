@@ -5,13 +5,13 @@
    <extension
          point="org.eclipse.ui.views">
       <category
-            id="edurideJunitView"
+            id="edurideViewCategory"
             name="EduRide">
       </category>
       <view
-            name="EduRideJunitView"
-            icon="icons/sample.gif"
-            category="edurideJunitView"
+            name="EduRide Feedback"
+            icon="icons/16-tag-pencil.gif"
+            category="edurideViewCategory"
             class="junitview.views.EduRideJunitView"
             id="plugin.views.EduRideJunitView">
       </view>
