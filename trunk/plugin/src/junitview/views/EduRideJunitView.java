@@ -94,7 +94,8 @@ public class EduRideJunitView extends ViewPart implements NavigationListener {
 	 */
 	public EduRideJunitView() {
 		super();
-		NavigatorActivator.getDefault().registerListener(this);
+		//turn this off for now
+		//NavigatorActivator.getDefault().registerListener(this);
 	}
 
 	private PageBook pagebook;
