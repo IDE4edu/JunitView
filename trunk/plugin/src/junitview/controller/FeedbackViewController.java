@@ -29,7 +29,7 @@ public class FeedbackViewController {
 		// ask Andrea + Jerry's stuff for the current target class 
 		// return the name of the class or the error string
 		if (step != null){
-			return step.getFilename();
+			return step.getSource();
 		} else {
 			return "";
 		}
