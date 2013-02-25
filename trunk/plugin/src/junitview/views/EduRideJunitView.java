@@ -2,6 +2,7 @@ package junitview.views;
 
 //import org.eduride.junitview.tests.*;
 
+import junitview.EduRideFeedback;
 import junitview.controller.*;
 import junitview.model.*;
 import studentview.controller.NavigationListener;
@@ -94,6 +95,8 @@ public class EduRideJunitView extends ViewPart implements NavigationListener {
 	 */
 	public EduRideJunitView() {
 		super();
+		
+		EduRideFeedback.getDefault().setController(feedback);
 		//turn this off for now
 		//NavigatorActivator.getDefault().registerListener(this);
 	}

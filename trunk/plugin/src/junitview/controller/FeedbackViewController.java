@@ -2,11 +2,13 @@ package junitview.controller;
 
 import java.util.HashMap;
 
+import org.eclipse.jdt.junit.model.ITestRunSession;
+
 import studentview.model.Step;
 
 import junitview.views.EduRideJunitView;
 import junitview.model.TestList;
-import junitview.tests.*;
+
 
 public class FeedbackViewController {
 	private EduRideJunitView view;
@@ -40,21 +42,29 @@ public class FeedbackViewController {
 	
 	
 	
+	
+	public void updateTests(TestList tl) {
+		view.updateTests(tl);
+	}
+	
+	
+	
 	/*
 	 * return null if there is a problem (doesn't compile, etc) -- test area is grey in view --
 	 * or a TestList
 	 */
 	
-	public TestList getTestList(Class<?> c) {
-		if (c == null) return null;
-		if (dict.containsKey(c)) {
-			return dict.get(c);
-		} else {
-			TestList t = new TestList(c);
-			dict.put(c, t);
-			return t;
-		}
-	}
+	
+//	public TestList getTestList(Class<?> c) {
+//		if (c == null) return null;
+//		if (dict.containsKey(c)) {
+//			return dict.get(c);
+//		} else {
+//			TestList t = new TestList(c);
+//			dict.put(c, t);
+//			return t;
+//		}
+//	}
 	
 	//TODO 
 	

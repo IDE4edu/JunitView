@@ -1,5 +1,7 @@
 package junitview;
 
+import junitview.controller.FeedbackViewController;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -7,18 +9,22 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends AbstractUIPlugin {
+public class EduRideFeedback extends AbstractUIPlugin {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "plugin"; //$NON-NLS-1$
+	public static final String PLUGIN_ID = "EduRideFeedbackView"; //$NON-NLS-1$
 
 	// The shared instance
-	private static Activator plugin;
+	private static EduRideFeedback plugin;
+	
+	private static FeedbackViewController controller;
+	
+	
 	
 	/**
 	 * The constructor
 	 */
-	public Activator() {
+	public EduRideFeedback() {
 	}
 
 	/*
@@ -28,9 +34,11 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		
+		
 	}
 
-	getDefault().
+	//getDefault().
 	
 	/*
 	 * (non-Javadoc)
@@ -46,10 +54,19 @@ public class Activator extends AbstractUIPlugin {
 	 *
 	 * @return the shared instance
 	 */
-	public static Activator getDefault() {
+	public static EduRideFeedback getDefault() {
 		return plugin;
 	}
 
+	
+	public void setController(FeedbackViewController fvc) {
+		controller = fvc;
+	}
+	
+	public FeedbackViewController getController() {
+		return controller;
+	}
+	
 	/**
 	 * Returns an image descriptor for the image file at the given
 	 * plug-in relative path

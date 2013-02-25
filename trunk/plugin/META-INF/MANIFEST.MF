@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: EduRideJunitView
 Bundle-SymbolicName: EduRideJunitView;singleton:=true
 Bundle-Version: 0.1.5
-Bundle-Activator: junitview.Activator
+Bundle-Activator: junitview.EduRideFeedback
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.junit;bundle-version="3.6.0",
