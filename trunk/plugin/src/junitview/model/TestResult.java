@@ -1,4 +1,4 @@
-package edu.berkeley.eduride.feedbackview.model;
+package junitview.model;
 
 import org.eclipse.jdt.junit.model.ITestElement;
 import org.eclipse.jdt.junit.model.ITestElementContainer;
@@ -33,4 +33,3 @@ public class TestResult {
 		return failure_trace;
 	}
 }
-
