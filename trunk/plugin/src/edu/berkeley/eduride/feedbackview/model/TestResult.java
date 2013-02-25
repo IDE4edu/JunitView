@@ -1,21 +1,15 @@
 package edu.berkeley.eduride.feedbackview.model;
 
-import org.eclipse.jdt.junit.model.ITestElement;
-import org.eclipse.jdt.junit.model.ITestElementContainer;
-import org.eclipse.jdt.junit.model.ITestRunSession;
-import org.eclipse.jdt.junit.model.ITestElement.FailureTrace;
-import org.eclipse.jdt.junit.model.ITestElement.ProgressState;
-import org.eclipse.jdt.junit.model.ITestElement.Result;
 
 public class TestResult {
 	
+	private String name;
 	private String progress_state;
-	
 	private String result;
-	
 	private String failure_trace;
 	
-	public TestResult(String progress_state, String result, String failure_trace){
+	public TestResult(String name, String progress_state, String result, String failure_trace){
+		this.name = name;
 		this.progress_state = progress_state;
 		this.result = result;
 		this.failure_trace = failure_trace;
@@ -31,6 +25,50 @@ public class TestResult {
 	
 	public String get_failure_trace(){
 		return failure_trace;
+	}
+
+	public String getMethodName() {
+		return "booyah1";
+	}
+	
+	public boolean hasDescription(){
+		return false;
+	}
+
+	public String getDescription(){
+		return "booyah2";
+	}
+
+	public boolean getSuccess(){
+		return false;
+	}
+
+	public boolean hasExpected(){
+		return false;
+	}
+
+	public String getExpected(){
+		return "booyah3";
+	}
+
+	public boolean hasObserved(){
+		return false;
+	}
+
+	public String getObserved(){
+		return "booyah4";
+	}
+
+	public String getMethodCall(){
+		return "booyah5";
+	}
+
+	public boolean hideWhenSuccessful(){
+		return false;
+	}
+
+	public String getName() {
+		return name;
 	}
 }
 
