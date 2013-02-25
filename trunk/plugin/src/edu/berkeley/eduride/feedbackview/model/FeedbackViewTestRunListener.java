@@ -1,17 +1,18 @@
-package junitview.model;
+package edu.berkeley.eduride.feedbackview.model;
 
-import junitview.EduRideFeedback;
 
 
 import org.eclipse.jdt.junit.TestRunListener;
 import org.eclipse.jdt.junit.model.ITestRunSession;
 
-public class JunitviewTestRunListener extends TestRunListener {
+import edu.berkeley.eduride.feedbackview.EduRideFeedback;
+
+public class FeedbackViewTestRunListener extends TestRunListener {
 
 
 	
 	
-	public JunitviewTestRunListener() {
+	public FeedbackViewTestRunListener() {
 		super();
 	}
 	

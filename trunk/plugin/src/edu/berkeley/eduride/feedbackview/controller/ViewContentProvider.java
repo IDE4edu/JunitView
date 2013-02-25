@@ -1,19 +1,20 @@
-package junitview.controller;
+package edu.berkeley.eduride.feedbackview.controller;
 
-import junitview.views.EduRideJunitView;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+
+import edu.berkeley.eduride.feedbackview.views.FeedbackView;
 
 public class ViewContentProvider implements IStructuredContentProvider {
 	/**
 	 * 
 	 */
-	private EduRideJunitView viewContentProvider;
+	private FeedbackView viewContentProvider;
 	/**
 	 * @param eduRideJunitView
 	 */
-	public ViewContentProvider(EduRideJunitView eduRideJunitView) {
+	public ViewContentProvider(FeedbackView eduRideJunitView) {
 		viewContentProvider = eduRideJunitView;
 	}
 	public void inputChanged(Viewer v, Object oldInput, Object newInput) {

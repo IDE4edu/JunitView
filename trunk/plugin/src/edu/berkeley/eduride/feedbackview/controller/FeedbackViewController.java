@@ -1,20 +1,21 @@
-package junitview.controller;
+package edu.berkeley.eduride.feedbackview.controller;
 
 import java.util.HashMap;
 
 import org.eclipse.jdt.junit.model.ITestRunSession;
 
+import edu.berkeley.eduride.feedbackview.model.TestList;
+import edu.berkeley.eduride.feedbackview.views.FeedbackView;
+
 import studentview.model.Step;
 
-import junitview.views.EduRideJunitView;
-import junitview.model.TestList;
 
 
 public class FeedbackViewController {
-	private EduRideJunitView view;
+	private FeedbackView view;
 	private HashMap<Class<?>,TestList> dict = new HashMap<Class<?>,TestList>();
 	
-	public FeedbackViewController(EduRideJunitView view) {
+	public FeedbackViewController(FeedbackView view) {
 		super();
 		this.view = view;
 	}

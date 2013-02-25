@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: EduRideJunitView
-Bundle-SymbolicName: EduRideJunitView;singleton:=true
+Bundle-Name: EduRideFeedbackView
+Bundle-SymbolicName: EduRideFeedbackView;singleton:=true
 Bundle-Version: 0.1.5
-Bundle-Activator: junitview.EduRideFeedback
+Bundle-Activator: edu.berkeley.eduride.feedbackview.EduRideFeedback
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.junit;bundle-version="3.6.0",

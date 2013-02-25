@@ -1,10 +1,11 @@
-package junitview;
+package edu.berkeley.eduride.feedbackview;
 
-import junitview.controller.FeedbackViewController;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+
+import edu.berkeley.eduride.feedbackview.controller.FeedbackViewController;
 
 /**
  * The activator class controls the plug-in life cycle

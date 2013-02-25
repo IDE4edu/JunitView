@@ -12,7 +12,7 @@
             name="EduRide Feedback"
             icon="icons/16-tag-pencil.gif"
             category="edurideViewCategory"
-            class="junitview.views.EduRideJunitView"
+            class="edu.berkeley.eduride.feedbackview.views.FeedbackView"
             id="plugin.views.EduRideJunitView">
       </view>
    </extension>

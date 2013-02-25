@@ -1,4 +1,4 @@
-package junitview.model;
+package edu.berkeley.eduride.feedbackview.model;
 
 import org.eclipse.jdt.junit.model.ITestRunSession;
 
