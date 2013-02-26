@@ -14,7 +14,14 @@ public class TestList {
 		ITestElement[] testElements = session.getChildren();
 		for (int i= 0; i < testElements.length; i++){
 			ITestElement x = testElements[i];
-			test_results.add(new TestResult(session.getTestRunName(), x.getProgressState().toString(), x.getTestResult(false).toString(), x.getFailureTrace().toString()));
+			String name = session.getTestRunName();
+			String progress_state = x.getProgressState().toString();
+			String result = x.getTestResult(false).toString();
+			String failure_trace = "";
+			if(x.getFailureTrace() != null){
+				failure_trace = x.getFailureTrace().toString();
+			}
+			test_results.add(new TestResult(name, progress_state, result, failure_trace));
 		}
 		
 		// ITestRunSession doesn't have squat

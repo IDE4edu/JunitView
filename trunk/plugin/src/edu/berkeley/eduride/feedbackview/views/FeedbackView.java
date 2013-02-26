@@ -214,7 +214,12 @@ public class FeedbackView extends ViewPart implements NavigationListener {
 	}
 
 	public void updateTests(TestList tl) {
-		viewer.setInput(tl);
+		if (tl != null){
+			//viewer.setInput(tl.test_results);
+			System.out.println(tl.test_results.toString());
+		} else {
+			viewer.setInput(null);
+		}
 		// Make the selection available to other views
 		getSite().setSelectionProvider(viewer);
 		// Set the sorter for the table
@@ -225,7 +230,7 @@ public class FeedbackView extends ViewPart implements NavigationListener {
 				return t.getSuccess() && !t.hideWhenSuccessful();
 			}
 		});
-
+		
 		// Layout the viewer
 		GridData gridData = new GridData();
 		gridData.verticalAlignment = GridData.FILL;
