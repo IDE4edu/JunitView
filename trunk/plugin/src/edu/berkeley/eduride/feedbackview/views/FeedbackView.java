@@ -62,7 +62,7 @@ public class FeedbackView extends ViewPart implements NavigationListener {
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
-	public static final String ID = "plugin.views.EduRideJunitView";
+	public static final String ID = "plugin.views.FeedbackView";
 
 	private TableViewer viewer;
 	private Action action1;
