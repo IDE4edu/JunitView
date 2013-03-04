@@ -62,7 +62,7 @@ public class FeedbackView extends ViewPart implements NavigationListener {
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
-	public static final String ID = "plugin.views.EduRideJunitView";
+	public static final String ID = "plugin.views.FeedbackView";
 
 	private TableViewer viewer;
 	private Action action1;
@@ -205,40 +205,50 @@ public class FeedbackView extends ViewPart implements NavigationListener {
 			table.setBackground(gray);
 			table.setForeground(gray);
 		}
-		TestList c = null;
+		TestList c = test;
 		updateTests(c);
 	}
 	
 	public void invokeTest(Class<?> testclass){
-		
+		updateTests(test);
 	}
 
+	TestList test = null;
 	public void updateTests(TestList tl) {
-		if (tl != null){
-			//viewer.setInput(tl.test_results);
-			System.out.println(tl.test_results.toString());
-		} else {
-			viewer.setInput(null);
-		}
-		// Make the selection available to other views
-		getSite().setSelectionProvider(viewer);
-		// Set the sorter for the table
-		viewer.addFilter(new ViewerFilter() {
-			public boolean select(Viewer viewer, Object parentElement,
-					Object element) {
-				TestResult t = (TestResult) element;
-				return t.getSuccess() && !t.hideWhenSuccessful();
-			}
+		test = tl;
+		Display.getDefault().asyncExec(new Runnable() {
+		    public void run() {
+		    	if (test != null){
+					System.out.println(test.test_results.get(0).getMethodName());
+					System.out.println("ASDFGHJKLaoisjdfoaijsdf");
+					viewer.setInput(test.test_results);
+					
+					
+				} else {
+					viewer.setInput(null);
+				}
+				// Make the selection available to other views
+				getSite().setSelectionProvider(viewer);
+				// Set the sorter for the table
+				viewer.addFilter(new ViewerFilter() {
+					public boolean select(Viewer viewer, Object parentElement,
+							Object element) {
+						TestResult t = (TestResult) element;
+						return t.getSuccess() && !t.hideWhenSuccessful();
+					}
+				});
+				
+				// Layout the viewer
+				GridData gridData = new GridData();
+				gridData.verticalAlignment = GridData.FILL;
+				gridData.horizontalSpan = 2;
+				gridData.grabExcessHorizontalSpace = true;
+				gridData.grabExcessVerticalSpace = true;
+				gridData.horizontalAlignment = GridData.FILL;
+				viewer.getControl().setLayoutData(gridData);
+		    }
 		});
 		
-		// Layout the viewer
-		GridData gridData = new GridData();
-		gridData.verticalAlignment = GridData.FILL;
-		gridData.horizontalSpan = 2;
-		gridData.grabExcessHorizontalSpace = true;
-		gridData.grabExcessVerticalSpace = true;
-		gridData.horizontalAlignment = GridData.FILL;
-		viewer.getControl().setLayoutData(gridData);
 	}
 
 	private void createViewer(Composite parent) {
@@ -264,6 +274,7 @@ public class FeedbackView extends ViewPart implements NavigationListener {
 		String[] titles = { "Success", "Name", "Description", "Expected",
 				"Observed" };
 		int[] bounds = { 100, 100, 100, 100, 100 };
+		System.out.println("creatingColumns");
 		// First column is the name
 		TableViewerColumn col = createTableViewerColumn(titles[0], bounds[0], 0);
 		col.setLabelProvider(new ColumnLabelProvider() {

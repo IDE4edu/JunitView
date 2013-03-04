@@ -40,7 +40,7 @@ public class TestResult {
 	}
 
 	public boolean getSuccess(){
-		return false;
+		return true;
 	}
 
 	public boolean hasExpected(){
