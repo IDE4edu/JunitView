@@ -7,7 +7,7 @@ import org.eclipse.jdt.junit.model.ITestRunSession;
 import edu.berkeley.eduride.feedbackview.model.TestList;
 import edu.berkeley.eduride.feedbackview.views.FeedbackView;
 
-import studentview.model.Step;
+//import studentview.model.Step;
 
 
 
@@ -28,6 +28,7 @@ public class FeedbackViewController {
 	 *  - target class has no test suite associated with it
 	 *  - test suite doesn't compile.
 	 */
+	/*
 	public String getViewTitle(Step step) {
 		// ask Andrea + Jerry's stuff for the current target class 
 		// return the name of the class or the error string
@@ -39,7 +40,7 @@ public class FeedbackViewController {
 		//return c.getName();
 		//return step.getName();
 		
-	}
+	}*/
 	
 	
 	

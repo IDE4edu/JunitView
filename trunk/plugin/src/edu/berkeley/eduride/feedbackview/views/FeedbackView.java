@@ -1,11 +1,11 @@
 package edu.berkeley.eduride.feedbackview.views;
 
 //import org.eduride.junitview.tests.*;
-
+/*
 import studentview.controller.NavigationListener;
 import studentview.NavigatorActivator;
 import studentview.model.Step;
-
+*/
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
@@ -57,7 +57,7 @@ import edu.berkeley.eduride.feedbackview.model.*;
  * <p>
  */
 
-public class FeedbackView extends ViewPart implements NavigationListener {
+public class FeedbackView extends ViewPart/* implements NavigationListener*/ {
 
 	/**
 	 * The ID of the view as specified by the extension.
@@ -190,41 +190,27 @@ public class FeedbackView extends ViewPart implements NavigationListener {
 	}
 
 	// what step changed to
-	public void stepChanged(Step step) {
-		Table table = viewer.getTable();
-		// Class<?> c;
-		if (step != null) {
-			// c = step.getTestClass();
-			setContentDescription(feedback.getViewTitle(step));
-			table.setBackground(white);
-			table.setForeground(black);
-		} else {
-			// c = null;
-			setContentDescription(feedback.getViewTitle(step)
-					+ ": No associated test suite");
-			table.setBackground(gray);
-			table.setForeground(gray);
-		}
-		TestList c = test;
-		updateTests(c);
-	}
-	
-	public void invokeTest(Class<?> testclass){
-		updateTests(test);
-	}
 
 	TestList test = null;
 	public void updateTests(TestList tl) {
+		
+		
 		test = tl;
 		Display.getDefault().asyncExec(new Runnable() {
 		    public void run() {
+		    	Table table = viewer.getTable();
 		    	if (test != null){
-					System.out.println(test.test_results.get(0).getMethodName());
-					System.out.println("ASDFGHJKLaoisjdfoaijsdf");
+		    		setContentDescription(test.test_results.get(0).getName());
+					table.setBackground(white);
+					table.setForeground(black);
 					viewer.setInput(test.test_results);
 					
 					
 				} else {
+					setContentDescription(""
+							+ ": No associated test suite");
+					table.setBackground(gray);
+					table.setForeground(gray);
 					viewer.setInput(null);
 				}
 				// Make the selection available to other views
@@ -262,7 +248,8 @@ public class FeedbackView extends ViewPart implements NavigationListener {
 		viewer.setContentProvider(new ArrayContentProvider());
 		// Get the content for the viewer, setInput will call getElements in the
 		// contentProvider
-		stepChanged(null);
+		//stepChanged(step);
+		updateTests(test);
 
 	}
 
