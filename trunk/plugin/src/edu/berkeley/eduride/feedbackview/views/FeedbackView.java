@@ -70,8 +70,6 @@ public class FeedbackView extends ViewPart/* implements NavigationListener*/ {
 	private Action doubleClickAction;
 
 	// private Observer observe;
-	private final FeedbackViewController feedback = new FeedbackViewController(
-			this);
 	private final Device device = Display.getCurrent();
 	private Color white = new Color(device, 255, 255, 255);
 	private Color gray = new Color(device, 190, 190, 190);
@@ -92,10 +90,6 @@ public class FeedbackView extends ViewPart/* implements NavigationListener*/ {
 	 */
 	public FeedbackView() {
 		super();
-
-		EduRideFeedback.getDefault().setController(feedback);
-		// turn this off for now
-		// NavigatorActivator.getDefault().registerListener(this);
 	}
 
 	private PageBook pagebook;
