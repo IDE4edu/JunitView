@@ -25,6 +25,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.jface.text.BadLocationException;
@@ -155,6 +156,7 @@ public class FeedbackView extends ViewPart/* implements NavigationListener*/ {
 	public void createPartControl(Composite parent) {
 		GridLayout layout = new GridLayout(2, false);
 		parent.setLayout(layout);
+		
 		createViewer(parent);
 		// Create the help context id for the viewer's control
 		PlatformUI.getWorkbench().getHelpSystem()
@@ -180,6 +182,7 @@ public class FeedbackView extends ViewPart/* implements NavigationListener*/ {
 
 		getSite().getWorkbenchWindow().getSelectionService()
 				.addSelectionListener(listener);
+		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().layout(true, true);
 
 	}
 

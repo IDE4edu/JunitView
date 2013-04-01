@@ -25,6 +25,8 @@ public class EduRideFeedback extends AbstractUIPlugin {
 	// The shared instance
 	private static EduRideFeedback plugin = null;
 
+	private TestList test;
+
 	/**
 	 * The constructor
 	 */
@@ -100,9 +102,9 @@ public class EduRideFeedback extends AbstractUIPlugin {
 
 	private static FeedbackView feedbackView;
 
-	//public static void setFeedbackView(FeedbackView fv) {
-	//	feedbackView = fv;
-	//}
+	public static void setFeedbackView(FeedbackView fv) {
+		feedbackView = fv;
+	}
 
 	public static FeedbackView getFeedbackView() {
 		// stolen from below, from JUnitPlugin
@@ -122,7 +124,7 @@ public class EduRideFeedback extends AbstractUIPlugin {
 		getDisplay().asyncExec(new Runnable() {
 			public void run() {
 				FeedbackView fv = showFeedbackViewInActivePage();	
-				//EduRideFeedback.setFeedbackView(fv);
+				EduRideFeedback.setFeedbackView(fv);
 			}
 		});
 	}
@@ -160,11 +162,17 @@ public class EduRideFeedback extends AbstractUIPlugin {
 
 	// ////////////
 
-	public void updateTests(TestList tl) {
-		getFeedbackView();
-		if (feedbackView != null) {
-			feedbackView.updateTests(tl);
-		}
+	public void asyncupdateTests(TestList tl) {
+		test = tl;
+		getDisplay().asyncExec(new Runnable() {
+			public void run() {
+				//getFeedbackView();
+				if (feedbackView != null) {
+					feedbackView.updateTests(test);
+				}
+			}
+		});
+		
 	}
 
 }

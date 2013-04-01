@@ -20,10 +20,13 @@ public class FeedbackViewTestRunListener extends TestRunListener {
 		super();
 	}
 	
-	public void sessionFinished(ITestRunSession session) {
+	public void sessionStarted(ITestRunSession session) {
 		EduRideFeedback.asyncShowFeedbackView();
+	}
+	
+	public void sessionFinished(ITestRunSession session) {
 		TestList tl = new TestList(session);
-		EduRideFeedback.getDefault().updateTests(tl);
+		EduRideFeedback.getDefault().asyncupdateTests(tl);
 	}
 	
 	
