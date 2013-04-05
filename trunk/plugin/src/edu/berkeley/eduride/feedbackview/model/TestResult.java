@@ -13,6 +13,9 @@ public class TestResult {
 		this.progress_state = progress_state;
 		this.result = result;
 		this.failure_trace = failure_trace;
+		System.out.println("State: "+progress_state);
+		System.out.println("Success: "+getSuccess());
+		System.out.println("Result: "+result);
 	}
 	
 	public String get_progress_state(){
@@ -40,7 +43,7 @@ public class TestResult {
 	}
 
 	public boolean getSuccess(){
-		return true;
+		return result.equals("OK");
 	}
 
 	public boolean hasExpected(){
