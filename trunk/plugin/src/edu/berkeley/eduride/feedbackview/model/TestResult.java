@@ -13,9 +13,11 @@ public class TestResult {
 		this.progress_state = progress_state;
 		this.result = result;
 		this.failure_trace = failure_trace;
+		System.out.println(name);
 		System.out.println("State: "+progress_state);
 		System.out.println("Success: "+getSuccess());
 		System.out.println("Result: "+result);
+		System.out.println("Fail_Trace: "+failure_trace.toString());
 	}
 	
 	public String get_progress_state(){
