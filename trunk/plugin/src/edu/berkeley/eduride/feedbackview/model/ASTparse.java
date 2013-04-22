@@ -92,5 +92,9 @@ public class ASTparse {
 			return methods;
 		}
 	}
+	
+	//TODO method.modifiers has annotations
+	//TODO get all methods for an annotation, get all annotations for a specific method, get annotation X from method Y -- return value of annotation, or boolean if it exists and has no values
+	//TODO want ^ these calls to be FAST. Want to prepopulate as much as you can...
 
 }
