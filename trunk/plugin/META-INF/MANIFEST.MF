@@ -11,4 +11,6 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.junit;bundle-version="[3.7.0,3.9.0)"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Import-Package: org.eclipse.jface.text
+Import-Package: org.eclipse.jdt.internal.junit.runner,
+ org.eclipse.jface.text
+Export-Package: edu.berkeley.eduride.feedbackview
