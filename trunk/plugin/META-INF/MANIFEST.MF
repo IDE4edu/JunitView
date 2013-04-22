@@ -8,9 +8,15 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.junit;bundle-version="3.6.0",
  org.junit;bundle-version="4.2.0",
- org.eclipse.jdt.junit;bundle-version="[3.7.0,3.9.0)"
+ org.eclipse.jdt.junit;bundle-version="[3.7.0,3.9.0)",
+ edu.berkeley.eduride.navigatorview;bundle-version="0.1.5"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+<<<<<<< HEAD
 Import-Package: org.eclipse.jdt.internal.junit.runner,
  org.eclipse.jface.text
 Export-Package: edu.berkeley.eduride.feedbackview
+=======
+Import-Package: org.eclipse.debug.core,
+ org.eclipse.jface.text
+>>>>>>> branch 'master' of https://github.com/IDE4edu/JunitView.git

@@ -23,7 +23,7 @@ public class TestList {
 			String result = x.getTestResult(true).toString();
 			String failure_trace = "";
 			if(x.getFailureTrace() != null){
-				failure_trace = x.getFailureTrace().toString();
+				failure_trace = x.getFailureTrace().getTrace();
 			}
 			test_results.add(new TestResult(name, progress_state, result, failure_trace));
 		}
