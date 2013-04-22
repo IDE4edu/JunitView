@@ -63,18 +63,19 @@ public class ASTparse {
 
 	private void createAST(IPackageFragment mypackage)
 			throws JavaModelException {
-		ICompilationUnit[] units = mypackage.getCompilationUnits();
 		for (ICompilationUnit unit : mypackage.getCompilationUnits()) {
-			// Now create the AST for the ICompilationUnits
-			CompilationUnit parse = parse(unit);
-			MethodVisitor visitor = new MethodVisitor();
-			parse.accept(visitor);
+			if (unit.getElementName().equals(test_class_name)){
+				// Now create the AST for the ICompilationUnits
+				CompilationUnit parse = parse(unit);
+				MethodVisitor visitor = new MethodVisitor();
+				parse.accept(visitor);
 
-			for (MethodDeclaration method : visitor.getMethods()) {
-				System.out.print("Method name: " + method.getName()
-						+ " Return type: " + method.getReturnType2());
+				for (MethodDeclaration method : visitor.getMethods()) {
+					String blah = method.toString();
+					System.out.println("Method name: " + method.getName()
+							+ " Return type: " + method.getReturnType2());
+				}
 			}
-
 		}
 	}
 
