@@ -4,6 +4,7 @@ import org.eclipse.jdt.internal.junit.ui.JUnitPlugin;
 import org.eclipse.jdt.internal.junit.ui.TestRunnerViewPart;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -123,27 +124,34 @@ public class EduRideFeedback extends AbstractUIPlugin {
 	public static void asyncShowFeedbackView() {
 		getDisplay().asyncExec(new Runnable() {
 			public void run() {
-				FeedbackView fv = showFeedbackViewInActivePage();	
+				FeedbackView fv = showFeedbackViewInActivePage();
+				System.out.println("FeedbackView: "+fv);
 				EduRideFeedback.setFeedbackView(fv);
 			}
 		});
 	}
 
 	// copied from JUnitPlugin
+	public static IViewPart iview;
 	public static FeedbackView showFeedbackViewInActivePage() {
 		try {
 			// Have to force the creation of view part contents
 			// otherwise the UI will not be updated
 			IWorkbenchPage page = EduRideFeedback.getActivePage();
+			System.out.println("page: "+ page);
 			if (page == null)
 				return null;
 			FeedbackView view = (FeedbackView) page.findView(FeedbackView.ID);
+			System.out.println("view: "+view);
+			iview = page.findView("org.eclipse.jdt.junit.ResultView");
 			if (view == null) {
 				// create and show the result view if it isn't created yet.
 				return (FeedbackView) page.showView(FeedbackView.ID, null,
 						IWorkbenchPage.VIEW_VISIBLE);
 			} else {
-				return view;
+				page.hideView(iview);
+				return (FeedbackView) page.showView(FeedbackView.ID, null,
+						IWorkbenchPage.VIEW_VISIBLE);
 			}
 		} catch (PartInitException pie) {
 			// EduRideFeedback.log(pie);
