@@ -28,6 +28,7 @@ public class FeedbackViewTestRunListener extends TestRunListener {
 	public void sessionStarted(ITestRunSession session) {
 		EduRideFeedback.asyncShowFeedbackView();
 		System.out.println("sessionname: "+ session.getTestRunName());
+		new ASTparse("curriculum libraries", "SquareTest.java").getSource();
 	}
 	
 	public void sessionFinished(ITestRunSession session) {
