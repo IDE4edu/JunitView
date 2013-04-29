@@ -55,6 +55,8 @@ public class FeedbackView extends ViewPart {
 	private Color green = new Color(device, 0, 100, 0);
 	private Color red = new Color(device, 255, 0, 0);
 	
+	public TestListStore store = new TestListStore();
+	
 	TestList test = null; //placeholder to pull from within a runnable
 
 	/**
@@ -230,7 +232,6 @@ public class FeedbackView extends ViewPart {
 				} else {
 					return "Incorrect";
 				}
-				// return null;
 			}
 
 			public Color getBackground(Object element) {
