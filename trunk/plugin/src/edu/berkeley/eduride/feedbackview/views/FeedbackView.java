@@ -8,16 +8,12 @@ import studentview.model.Step;
 */
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
-import org.eclipse.ui.part.*;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -38,28 +34,9 @@ import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.*;
 import org.eclipse.swt.widgets.*;
-
-import edu.berkeley.eduride.feedbackview.EduRideFeedback;
-import edu.berkeley.eduride.feedbackview.controller.*;
 import edu.berkeley.eduride.feedbackview.model.*;
 
-/**
- * This sample class demonstrates how to plug-in a new workbench view. The view
- * shows data obtained from the model. The sample creates a dummy model on the
- * fly, but a real implementation would connect to the model available either in
- * this or another plug-in (e.g. the workspace). The view is connected to the
- * model using a content provider.
- * <p>
- * The view uses a label provider to define how model objects should be
- * presented in the view. Each view can present the same model objects using
- * different labels and icons, if needed. Alternatively, a single label provider
- * can be shared between views in order to ensure that objects of the same type
- * are presented in the same way everywhere.
- * <p>
- */
-
-public class FeedbackView extends ViewPart/* implements NavigationListener*/ {
-
+public class FeedbackView extends ViewPart {
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
@@ -77,14 +54,8 @@ public class FeedbackView extends ViewPart/* implements NavigationListener*/ {
 	private Color black = new Color(device, 0, 0, 0);
 	private Color green = new Color(device, 0, 100, 0);
 	private Color red = new Color(device, 255, 0, 0);
-
-	/*
-	 * The content provider class is responsible for providing objects to the
-	 * view. It can wrap existing objects in adapters or simply return objects
-	 * as-is. These objects may be sensitive to the current input of the view,
-	 * or ignore it and always show the same content (like Task List, for
-	 * example).
-	 */
+	
+	TestList test = null; //placeholder to pull from within a runnable
 
 	/**
 	 * The constructor.
@@ -186,12 +157,7 @@ public class FeedbackView extends ViewPart/* implements NavigationListener*/ {
 
 	}
 
-	// what step changed to
-
-	TestList test = null;
 	public void updateTests(TestList tl) {
-		
-		
 		test = tl;
 		Display.getDefault().asyncExec(new Runnable() {
 		    public void run() {
@@ -201,11 +167,8 @@ public class FeedbackView extends ViewPart/* implements NavigationListener*/ {
 					table.setBackground(white);
 					table.setForeground(black);
 					viewer.setInput(test.test_results);
-					
-					
 				} else {
-					setContentDescription(""
-							+ ": No associated test suite");
+					setContentDescription("No associated test suite");
 					table.setBackground(gray);
 					table.setForeground(gray);
 					viewer.setInput(null);
@@ -231,7 +194,6 @@ public class FeedbackView extends ViewPart/* implements NavigationListener*/ {
 				viewer.getControl().setLayoutData(gridData);
 		    }
 		});
-		
 	}
 
 	private void createViewer(Composite parent) {
@@ -245,14 +207,12 @@ public class FeedbackView extends ViewPart/* implements NavigationListener*/ {
 		viewer.setContentProvider(new ArrayContentProvider());
 		// Get the content for the viewer, setInput will call getElements in the
 		// contentProvider
-		//stepChanged(step);
 		updateTests(test);
-
 	}
 
-	public TableViewer getViewer() {
-		return viewer;
-	}
+//	public TableViewer getViewer() {
+//		return viewer;
+//	}
 
 	private void createColumns(final Composite parent, final TableViewer viewer) {
 		String[] titles = { "Success", "Name", "Description", "Expected",
