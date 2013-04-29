@@ -37,7 +37,6 @@ public class ASTparse {
 	}
 
 	public void getSource() {
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
 		ICompilationUnit unit = null;
 
