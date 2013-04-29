@@ -25,40 +25,34 @@ import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 
 public class ASTparse {
 
-	private String project_name;
+	private IProject project;
 	private String test_class_name;
 	private Hashtable<String, ArrayList<MethodDeclaration>> methods_by_annotation = new Hashtable<String, ArrayList<MethodDeclaration>>();
 	private Hashtable<MethodDeclaration, ArrayList<Annotation>> annotations_of_a_method = new Hashtable<MethodDeclaration, ArrayList<Annotation>>();
 
 
-	public ASTparse(String project_name, String test_class_name) {
-		this.project_name = project_name;
+	public ASTparse(IProject project, String test_class_name) {
+		this.project = project;
 		this.test_class_name = test_class_name;
 	}
 
 	public void getSource() {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
-		IProject[] projects = workspace.getRoot().getProjects();
-
 		ICompilationUnit unit = null;
 
-		for (IProject project : projects) {
-			if (project.getName().equals(project_name)) {
-				try {
-					IPackageFragment[] packages = JavaCore.create(project)
-							.getPackageFragments();
-					for (IPackageFragment mypackage : packages) {
-						if (mypackage.getKind() == IPackageFragmentRoot.K_SOURCE) {
-							createAST(mypackage);
-						}
-
-					}
-				} catch (JavaModelException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+		try {
+			IPackageFragment[] packages = JavaCore.create(project)
+					.getPackageFragments();
+			for (IPackageFragment mypackage : packages) {
+				if (mypackage.getKind() == IPackageFragmentRoot.K_SOURCE) {
+					createAST(mypackage);
 				}
+
 			}
+		} catch (JavaModelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -82,15 +76,15 @@ public class ASTparse {
 				for (MethodDeclaration method : visitor.getMethods()) {
 					List<Object> modifiers = method.modifiers();
 					ArrayList<Annotation> annotations = new ArrayList<Annotation>();
-					
+
 					for (int i = 0; i < modifiers.size(); i++){
 						if (modifiers.get(i)instanceof Annotation){
 							Annotation annotation = (Annotation) modifiers.get(i);
 							String annotation_name = annotation.toString();
-							
+
 							// annotations of a certain method
 							annotations.add(annotation);
-							
+
 							// methods with a certain annotation
 							if(methods_by_annotation.get(annotation_name) == null){
 								// new annotation
@@ -105,13 +99,13 @@ public class ASTparse {
 							}
 						}
 					}
-					
+
 					// annotations of a certain method
 					annotations_of_a_method.put(method, annotations);
 
-//					String blah = method.toString();
-//					System.out.println("Method name: " + method.getName()
-//							+ " Return type: " + method.getReturnType2());
+					//					String blah = method.toString();
+					//					System.out.println("Method name: " + method.getName()
+					//							+ " Return type: " + method.getReturnType2());
 				}
 			}
 		}
@@ -130,17 +124,18 @@ public class ASTparse {
 			return methods;
 		}
 	}
-	
-	ArrayList<MethodDeclaration> get_methods_by_annotation(MarkerAnnotation annotation){
+
+	ArrayList<MethodDeclaration> get_methods_by_annotation(String annotation){
 		return methods_by_annotation.get(annotation);
 	}
-	
+
 	ArrayList<Annotation> get_annotations(MethodDeclaration method){
 		return annotations_of_a_method.get(method);
 	}
-	
+
 	//TODO method.modifiers has annotations
 	//TODO get all methods for an annotation, get all annotations for a specific method, get annotation X from method Y -- return value of annotation, or boolean if it exists and has no values
 	//TODO want ^ these calls to be FAST. Want to prepopulate as much as you can...
+	//TODO will be given a IProject instead of project name
 
 }
