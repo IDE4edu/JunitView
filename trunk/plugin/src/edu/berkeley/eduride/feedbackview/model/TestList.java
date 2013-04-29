@@ -2,6 +2,9 @@ package edu.berkeley.eduride.feedbackview.model;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.jdt.core.dom.Annotation;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.junit.model.ITestCaseElement;
 import org.eclipse.jdt.junit.model.ITestElement;
 import org.eclipse.jdt.junit.model.ITestElementContainer;
@@ -9,8 +12,20 @@ import org.eclipse.jdt.junit.model.ITestRunSession;
 
 public class TestList {
 	
+	private ASTparse parse;
 	public ArrayList<TestResult> test_results;
 
+	public TestList(IProject proj, String javaFileName) {
+		parse = new ASTparse(proj,javaFileName);
+		ArrayList<MethodDeclaration> methods = parse.get_methods_by_annotation("@Test");
+		for(MethodDeclaration method:methods){
+			ArrayList<Annotation> annotations = parse.get_annotations(method);
+			for(Annotation annotation:annotations){
+				System.out.println(annotation);
+			}
+			//test_results.add(new TestResult());
+		}
+	}
 	public TestList(ITestRunSession session) {
 		test_results = new ArrayList<TestResult>();
 		ITestElementContainer container = (ITestElementContainer) session.getChildren()[0];
@@ -28,9 +43,7 @@ public class TestList {
 			test_results.add(new TestResult(name, progress_state, result, failure_trace));
 		}
 		
-		// ITestRunSession doesn't have squat
-		// ITestRunElement has an array of ITestElements
-		// ITestElement has shit we need!
+
 		
 		// TODO build test results into here based on constructor
 		
