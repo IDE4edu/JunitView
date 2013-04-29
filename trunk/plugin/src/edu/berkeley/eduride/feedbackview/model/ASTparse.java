@@ -1,6 +1,7 @@
 package edu.berkeley.eduride.feedbackview.model;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
@@ -14,13 +15,21 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.Name;
+import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 
 public class ASTparse {
 
 	private String project_name;
 	private String test_class_name;
+	private Hashtable<String, ArrayList<MethodDeclaration>> methods_by_annotation = new Hashtable<String, ArrayList<MethodDeclaration>>();
+	private Hashtable<MethodDeclaration, ArrayList<Annotation>> annotations_of_a_method = new Hashtable<MethodDeclaration, ArrayList<Annotation>>();
+
 
 	public ASTparse(String project_name, String test_class_name) {
 		this.project_name = project_name;
@@ -71,9 +80,38 @@ public class ASTparse {
 				parse.accept(visitor);
 
 				for (MethodDeclaration method : visitor.getMethods()) {
-					String blah = method.toString();
-					System.out.println("Method name: " + method.getName()
-							+ " Return type: " + method.getReturnType2());
+					List<Object> modifiers = method.modifiers();
+					ArrayList<Annotation> annotations = new ArrayList<Annotation>();
+					
+					for (int i = 0; i < modifiers.size(); i++){
+						if (modifiers.get(i)instanceof Annotation){
+							Annotation annotation = (Annotation) modifiers.get(i);
+							String annotation_name = annotation.toString();
+							
+							// annotations of a certain method
+							annotations.add(annotation);
+							
+							// methods with a certain annotation
+							if(methods_by_annotation.get(annotation_name) == null){
+								// new annotation
+								ArrayList<MethodDeclaration> methods = new ArrayList<MethodDeclaration>();
+								methods.add(method);
+								methods_by_annotation.put(annotation_name, methods);
+							} else{
+								// seen annotation
+								ArrayList<MethodDeclaration> methods = methods_by_annotation.get(annotation_name);
+								methods.add(method);
+								methods_by_annotation.put(annotation_name, methods);
+							}
+						}
+					}
+					
+					// annotations of a certain method
+					annotations_of_a_method.put(method, annotations);
+
+//					String blah = method.toString();
+//					System.out.println("Method name: " + method.getName()
+//							+ " Return type: " + method.getReturnType2());
 				}
 			}
 		}
@@ -91,6 +129,14 @@ public class ASTparse {
 		public List<MethodDeclaration> getMethods() {
 			return methods;
 		}
+	}
+	
+	ArrayList<MethodDeclaration> get_methods_by_annotation(MarkerAnnotation annotation){
+		return methods_by_annotation.get(annotation);
+	}
+	
+	ArrayList<Annotation> get_annotations(MethodDeclaration method){
+		return annotations_of_a_method.get(method);
 	}
 	
 	//TODO method.modifiers has annotations
