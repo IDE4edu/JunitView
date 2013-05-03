@@ -17,7 +17,7 @@ public class TestResult {
 		System.out.println("State: "+progress_state);
 		System.out.println("Success: "+getSuccess());
 		System.out.println("Result: "+result);
-		System.out.println("Fail_Trace: "+failure_trace.toString());
+		//System.out.println("Fail_Trace: "+failure_trace.toString());
 	}
 	
 	public String get_progress_state(){
