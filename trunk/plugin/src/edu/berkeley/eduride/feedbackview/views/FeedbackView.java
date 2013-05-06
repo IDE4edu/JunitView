@@ -42,6 +42,7 @@ public class FeedbackView extends ViewPart {
 	 */
 	public static final String ID = "plugin.views.FeedbackView";
 
+	private Composite viewParent;
 	private TableViewer viewer;
 	private Action action1;
 	private Action action2;
@@ -127,6 +128,7 @@ public class FeedbackView extends ViewPart {
 	 * it.
 	 */
 	public void createPartControl(Composite parent) {
+		viewParent = parent;
 		GridLayout layout = new GridLayout(2, false);
 		parent.setLayout(layout);
 		
@@ -194,6 +196,9 @@ public class FeedbackView extends ViewPart {
 				gridData.grabExcessVerticalSpace = true;
 				gridData.horizontalAlignment = GridData.FILL;
 				viewer.getControl().setLayoutData(gridData);
+				
+				//try to update the layout
+				viewParent.layout();
 		    }
 		});
 	}
