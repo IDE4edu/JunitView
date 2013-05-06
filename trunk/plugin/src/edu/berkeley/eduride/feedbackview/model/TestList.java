@@ -13,40 +13,37 @@ import org.eclipse.jdt.junit.model.ITestRunSession;
 public class TestList {
 	
 	private ASTparse parse;
-	public ArrayList<TestResult> test_results;
+	public ArrayList<TestResult> test_results = new ArrayList<TestResult>();
 
 	public TestList(IProject proj, String javaFileName) {
 		parse = new ASTparse(proj,javaFileName);
+		//parse.getSource();
 		ArrayList<MethodDeclaration> methods = parse.get_methods_by_annotation("@Test");
 		for(MethodDeclaration method:methods){
 			ArrayList<Annotation> annotations = parse.get_annotations(method);
 			for(Annotation annotation:annotations){
 				System.out.println(annotation);
 			}
-			//test_results.add(new TestResult());
+			test_results.add(new TestResult(annotations, javaFileName.substring(0,javaFileName.length()-5)));
 		}
 	}
-	public TestList(ITestRunSession session) {
-		test_results = new ArrayList<TestResult>();
-		ITestElementContainer container = (ITestElementContainer) session.getChildren()[0];
-		ITestElement[] testElements = container.getChildren();
-		for (int i= 0; i < testElements.length; i++){
-			ITestElement x = testElements[i];
-			
-			String name = ((ITestCaseElement)x).getTestMethodName();
-			String progress_state = x.getProgressState().toString();
-			String result = x.getTestResult(true).toString();
-			String failure_trace = "";
-			if(x.getFailureTrace() != null){
-				failure_trace = x.getFailureTrace().getTrace();
-			}
-			test_results.add(new TestResult(name, progress_state, result, failure_trace));
-		}
-		
-
-		
-		// TODO build test results into here based on constructor
-		
-	}
+//	public TestList(ITestRunSession session) {
+//		test_results = new ArrayList<TestResult>();
+//		ITestElementContainer container = (ITestElementContainer) session.getChildren()[0];
+//		ITestElement[] testElements = container.getChildren();
+//		for (int i= 0; i < testElements.length; i++){
+//			ITestElement x = testElements[i];
+//			
+//			String name = ((ITestCaseElement)x).getTestMethodName();
+//			String progress_state = x.getProgressState().toString();
+//			String result = x.getTestResult(true).toString();
+//			String failure_trace = "";
+//			if(x.getFailureTrace() != null){
+//				failure_trace = x.getFailureTrace().getTrace();
+//			}
+//			test_results.add(new TestResult(name, progress_state, result, failure_trace));
+//		}
+//		// TODO build test results into here based on constructor
+//	}
 
 }
