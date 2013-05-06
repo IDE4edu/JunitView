@@ -34,6 +34,7 @@ public class ASTparse {
 	public ASTparse(IProject project, String test_class_name) {
 		this.project = project;
 		this.test_class_name = test_class_name;
+		getSource();
 	}
 
 	public void getSource() {

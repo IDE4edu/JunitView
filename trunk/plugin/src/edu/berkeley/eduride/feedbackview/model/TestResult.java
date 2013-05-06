@@ -10,14 +10,15 @@ import org.eclipse.jdt.core.dom.IMemberValuePairBinding;
 public class TestResult {
 	
 	private String result;
+	private boolean success = false;
 	
 	private String mMethodName, mMethodCall, mDescription;
 	private String expected;
 	private String observed;
 	private boolean hideWhenSuccessful = false;
 	
-	public TestResult(ArrayList<Annotation> annotations) {
-		//mMethodName = 
+	public TestResult(ArrayList<Annotation> annotations, String name) {
+		mMethodName = name;
 		for (Annotation annotation: annotations) {
 			IAnnotationBinding binding = annotation.resolveAnnotationBinding();
 			IMemberValuePairBinding[] valuePairs = binding.getDeclaredMemberValuePairs();
@@ -29,6 +30,23 @@ public class TestResult {
 						mMethodCall = (String)valuePair.getValue();
 					}
 				}
+			}
+			if(annotationName.equals("Expected")){
+				for(IMemberValuePairBinding valuePair: valuePairs){
+					if(valuePair.getName().equals("value")){
+						expected = (String)valuePair.getValue();
+					}
+				}
+			}
+			if(annotationName.equals("Description")){
+				for(IMemberValuePairBinding valuePair: valuePairs){
+					if(valuePair.getName().equals("value")){
+						mDescription = (String)valuePair.getValue();
+					}
+				}
+			}
+			if(annotationName.equals("hideWhenSuccessful")){
+				hideWhenSuccessful = true;
 			}
 //			String mMethodCall = extractAnnotationValue(annotation, "MethodCall", "value");
 //			if (mMethodCall != null){
@@ -53,65 +71,67 @@ public class TestResult {
 		}
 	}
 	
-	public void updateTest(String name, String result){
-		this.name = name;
+	public void updateSuccess(String result){
 		this.result = result;
+		if (result.equals("OK")){
+			success = true;
+		} else {
+			success = false;
+		}
 	}
 	
-	public String get_progress_state(){
-		return progress_state;
+	public void updateObserved(String observed){
+		this.observed = observed;
 	}
 	
 	public String get_result(){
 		return result;
 	}
 	
-	public String get_failure_trace(){
-		return failure_trace;
-	}
-
 	public String getMethodName() {
-		return "booyah1";
+		return mMethodName;
 	}
 	
 	public boolean hasDescription(){
-		return false;
+		return mDescription != null;
 	}
 
 	public String getDescription(){
-		return "booyah2";
+		return mDescription;
 	}
 
 	public boolean getSuccess(){
-		return result.equals("OK");
+		if (result == null && hideWhenSuccessful)
+			return true;
+		return success;
 	}
 
 	public boolean hasExpected(){
-		return false;
+		return expected != null;
 	}
 
 	public String getExpected(){
-		return "booyah3";
+		return expected;
 	}
 
 	public boolean hasObserved(){
-		return false;
+		return observed != null;
 	}
 
 	public String getObserved(){
-		return "booyah4";
+		return observed;
 	}
 
 	public String getMethodCall(){
-		return "booyah5";
+		return mMethodCall;
 	}
 
 	public boolean hideWhenSuccessful(){
-		return false;
+		return hideWhenSuccessful;
 	}
 
 	public String getName() {
-		return name;
+		return getMethodCall();
 	}
 }
 
