@@ -133,9 +133,4 @@ public class ASTparse {
 		return annotations_of_a_method.get(method);
 	}
 
-	//TODO method.modifiers has annotations
-	//TODO get all methods for an annotation, get all annotations for a specific method, get annotation X from method Y -- return value of annotation, or boolean if it exists and has no values
-	//TODO want ^ these calls to be FAST. Want to prepopulate as much as you can...
-	//TODO will be given a IProject instead of project name
-
 }
