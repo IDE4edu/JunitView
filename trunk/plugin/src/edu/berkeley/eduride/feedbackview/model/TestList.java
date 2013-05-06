@@ -23,30 +23,26 @@ public class TestList {
 			for(Annotation annotation:annotations){
 				System.out.println(annotation);
 			}
-			//test_results.add(new TestResult());
+			test_results.add(new TestResult(annotations));
 		}
 	}
-	public TestList(ITestRunSession session) {
-		test_results = new ArrayList<TestResult>();
-		ITestElementContainer container = (ITestElementContainer) session.getChildren()[0];
-		ITestElement[] testElements = container.getChildren();
-		for (int i= 0; i < testElements.length; i++){
-			ITestElement x = testElements[i];
-			
-			String name = ((ITestCaseElement)x).getTestMethodName();
-			String progress_state = x.getProgressState().toString();
-			String result = x.getTestResult(true).toString();
-			String failure_trace = "";
-			if(x.getFailureTrace() != null){
-				failure_trace = x.getFailureTrace().getTrace();
-			}
-			test_results.add(new TestResult(name, progress_state, result, failure_trace));
-		}
-		
-
-		
-		// TODO build test results into here based on constructor
-		
-	}
+//	public TestList(ITestRunSession session) {
+//		test_results = new ArrayList<TestResult>();
+//		ITestElementContainer container = (ITestElementContainer) session.getChildren()[0];
+//		ITestElement[] testElements = container.getChildren();
+//		for (int i= 0; i < testElements.length; i++){
+//			ITestElement x = testElements[i];
+//			
+//			String name = ((ITestCaseElement)x).getTestMethodName();
+//			String progress_state = x.getProgressState().toString();
+//			String result = x.getTestResult(true).toString();
+//			String failure_trace = "";
+//			if(x.getFailureTrace() != null){
+//				failure_trace = x.getFailureTrace().getTrace();
+//			}
+//			test_results.add(new TestResult(name, progress_state, result, failure_trace));
+//		}
+//		// TODO build test results into here based on constructor
+//	}
 
 }

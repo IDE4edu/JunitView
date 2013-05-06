@@ -1,23 +1,61 @@
 package edu.berkeley.eduride.feedbackview.model;
 
+import java.util.ArrayList;
+
+import org.eclipse.jdt.core.dom.Annotation;
+import org.eclipse.jdt.core.dom.IAnnotationBinding;
+import org.eclipse.jdt.core.dom.IMemberValuePairBinding;
+
 
 public class TestResult {
 	
-	private String name;
-	private String progress_state;
 	private String result;
-	private String failure_trace;
 	
-	public TestResult(String name, String progress_state, String result, String failure_trace){
+	private String mMethodName, mMethodCall, mDescription;
+	private String expected;
+	private String observed;
+	private boolean hideWhenSuccessful = false;
+	
+	public TestResult(ArrayList<Annotation> annotations) {
+		//mMethodName = 
+		for (Annotation annotation: annotations) {
+			IAnnotationBinding binding = annotation.resolveAnnotationBinding();
+			IMemberValuePairBinding[] valuePairs = binding.getDeclaredMemberValuePairs();
+			//mMethodName = binding.getName();
+			String annotationName = binding.getName();
+			if(annotationName.equals("MethodCall")){
+				for(IMemberValuePairBinding valuePair: valuePairs){
+					if(valuePair.getName().equals("value")){
+						mMethodCall = (String)valuePair.getValue();
+					}
+				}
+			}
+//			String mMethodCall = extractAnnotationValue(annotation, "MethodCall", "value");
+//			if (mMethodCall != null){
+//				this.mMethodCall = mMethodCall;
+//				continue;
+//			}
+//			String expected = extractAnnotationValue(annotation, "Expected", "value");
+//			if (expected != null){
+//				this.expected = expected;
+//				continue;
+//			}
+//			String mDescription = extractAnnotationValue(annotation, "Description", "value");
+//			if (mDescription != null) {
+//				this.mDescription = mDescription;
+//				continue;
+//			}
+//			String hideWhenSuccessful = annotation.annotationType().getSimpleName();
+//			if (hideWhenSuccessful!= null && hideWhenSuccessful.equals("hideWhenSuccessful")) {
+//				this.hideWhenSuccessful = true;
+//				continue;
+//			}
+		}
+	}
+	
+	public void updateTest(String name, String result){
 		this.name = name;
-		this.progress_state = progress_state;
 		this.result = result;
-		this.failure_trace = failure_trace;
-		System.out.println(name);
-		System.out.println("State: "+progress_state);
-		System.out.println("Success: "+getSuccess());
-		System.out.println("Result: "+result);
-		//System.out.println("Fail_Trace: "+failure_trace.toString());
 	}
 	
 	public String get_progress_state(){
