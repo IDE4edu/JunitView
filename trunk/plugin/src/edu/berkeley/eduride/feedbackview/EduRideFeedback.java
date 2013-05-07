@@ -125,7 +125,6 @@ public class EduRideFeedback extends AbstractUIPlugin {
 		getDisplay().asyncExec(new Runnable() {
 			public void run() {
 				FeedbackView fv = showFeedbackViewInActivePage();
-				System.out.println("FeedbackView: "+fv);
 				EduRideFeedback.setFeedbackView(fv);
 			}
 		});
@@ -138,11 +137,9 @@ public class EduRideFeedback extends AbstractUIPlugin {
 			// Have to force the creation of view part contents
 			// otherwise the UI will not be updated
 			IWorkbenchPage page = EduRideFeedback.getActivePage();
-			System.out.println("page: "+ page);
 			if (page == null)
 				return null;
 			FeedbackView view = (FeedbackView) page.findView(FeedbackView.ID);
-			System.out.println("view: "+view);
 			iview = page.findView("org.eclipse.jdt.junit.ResultView");
 			if (view == null) {
 				// create and show the result view if it isn't created yet.

@@ -21,9 +21,6 @@ public class TestList {
 		ArrayList<MethodDeclaration> methods = parse.get_methods_by_annotation("@Test");
 		for(MethodDeclaration method:methods){
 			ArrayList<Annotation> annotations = parse.get_annotations(method);
-			for(Annotation annotation:annotations){
-				System.out.println(annotation);
-			}
 			test_results.add(new TestResult(annotations, javaFileName.substring(0,javaFileName.length()-5)));
 		}
 	}
