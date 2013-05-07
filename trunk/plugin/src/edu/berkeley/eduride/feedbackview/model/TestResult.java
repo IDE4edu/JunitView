@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IMemberValuePairBinding;
+import org.eclipse.jdt.junit.model.ITestElement.Result;
 
 
 public class TestResult {
@@ -71,13 +72,9 @@ public class TestResult {
 		}
 	}
 	
-	public void updateSuccess(String result){
-		this.result = result;
-		if (result.equals("OK")){
-			success = true;
-		} else {
-			success = false;
-		}
+	
+	public void updateSuccess(boolean success) {
+		this.success = success;
 	}
 	
 	public void updateObserved(String observed){
@@ -101,8 +98,8 @@ public class TestResult {
 	}
 
 	public boolean getSuccess(){
-		if (result == null && hideWhenSuccessful)
-			return true;
+//		if (result == null && hideWhenSuccessful)
+//			return true;
 		return success;
 	}
 

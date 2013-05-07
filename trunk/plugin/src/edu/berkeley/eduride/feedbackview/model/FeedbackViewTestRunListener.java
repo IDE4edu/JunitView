@@ -9,6 +9,8 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.junit.TestRunListener;
 import org.eclipse.jdt.junit.model.ITestCaseElement;
 import org.eclipse.jdt.junit.model.ITestElement;
+import org.eclipse.jdt.junit.model.ITestElement.FailureTrace;
+import org.eclipse.jdt.junit.model.ITestElement.Result;
 import org.eclipse.jdt.junit.model.ITestElementContainer;
 import org.eclipse.jdt.junit.model.ITestRunSession;
 
@@ -40,16 +42,17 @@ public class FeedbackViewTestRunListener extends TestRunListener {
 		ITestElementContainer container = (ITestElementContainer) session.getChildren()[0];
 		ITestElement[] testElements = container.getChildren();
 		for (int i= 0; i < testElements.length; i++){
-			ITestElement x = testElements[i];
+			ITestElement testelement = testElements[i];
+			FailureTrace failuretrace = testelement.getFailureTrace();
 			
-			String name = ((ITestCaseElement)x).getTestMethodName();
-			String result = x.getTestResult(true).toString();
 			String observed;
-			if(x.getFailureTrace() != null){
-				observed = (String)x.getFailureTrace().getActual();
+			if(failuretrace == null){
+				tl.test_results.get(i).updateSuccess(true);
+			} else {
+				observed = (String)failuretrace.getActual();
 				tl.test_results.get(i).updateObserved(observed);
+				tl.test_results.get(i).updateSuccess(false);
 			}
-			tl.test_results.get(i).updateSuccess(result);
 		}
 		EduRideFeedback.getDefault().asyncupdateTests(tl);
 	}
