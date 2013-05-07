@@ -184,7 +184,7 @@ public class FeedbackView extends ViewPart {
 					public boolean select(Viewer viewer, Object parentElement,
 							Object element) {
 						TestResult t = (TestResult) element;
-						return (t.getSuccess() || !t.hideWhenSuccessful());
+						return (!t.getSuccess() || !t.hideWhenSuccessful());
 					}
 				});
 				
