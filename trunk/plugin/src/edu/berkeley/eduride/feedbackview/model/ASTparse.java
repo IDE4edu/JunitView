@@ -29,6 +29,7 @@ public class ASTparse {
 	private String test_class_name;
 	private Hashtable<String, ArrayList<MethodDeclaration>> methods_by_annotation = new Hashtable<String, ArrayList<MethodDeclaration>>();
 	private Hashtable<MethodDeclaration, ArrayList<Annotation>> annotations_of_a_method = new Hashtable<MethodDeclaration, ArrayList<Annotation>>();
+	private Hashtable<String, ArrayList<Annotation>> annotations_of_a_methodname = new Hashtable<String, ArrayList<Annotation>>();
 
 
 	public ASTparse(IProject project, String test_class_name) {
@@ -102,6 +103,7 @@ public class ASTparse {
 
 					// annotations of a certain method
 					annotations_of_a_method.put(method, annotations);
+					annotations_of_a_methodname.put(method.getName().getFullyQualifiedName(), annotations);
 
 					//					String blah = method.toString();
 					//					System.out.println("Method name: " + method.getName()
@@ -131,6 +133,10 @@ public class ASTparse {
 
 	ArrayList<Annotation> get_annotations(MethodDeclaration method){
 		return annotations_of_a_method.get(method);
+	}
+	
+	ArrayList<Annotation> get_annotations(String methodName) {
+		return annotations_of_a_methodname.get(methodName);
 	}
 
 }
