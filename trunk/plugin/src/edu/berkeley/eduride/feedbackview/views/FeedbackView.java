@@ -58,7 +58,7 @@ public class FeedbackView extends ViewPart {
 	
 	public TestListStore store = new TestListStore();
 	
-	TestList test = null; //placeholder to pull from within a runnable
+	TestList currentTestList = null; //placeholder to pull from within a runnable
 
 	/**
 	 * The constructor.
@@ -162,17 +162,17 @@ public class FeedbackView extends ViewPart {
 	}
 
 	public void updateTests(TestList tl) {
-		test = tl;
+		currentTestList = tl;
 		Display.getDefault().asyncExec(new Runnable() {
 		    public void run() {
 		    	Table table = viewer.getTable();
-		    	if (test != null){
-		    		setContentDescription(test.getName());
+		    	if (currentTestList != null){
+		    		setContentDescription(currentTestList.getName());
 					table.setBackground(white);
 					table.setForeground(black);
-					viewer.setInput(test.test_results);
+					viewer.setInput(currentTestList.test_results);
 				} else {
-					setContentDescription("No associated test suite");
+					setContentDescription("No associated currentTestList suite");
 					table.setBackground(gray);
 					table.setForeground(gray);
 					viewer.setInput(null);
@@ -214,7 +214,7 @@ public class FeedbackView extends ViewPart {
 		viewer.setContentProvider(new ArrayContentProvider());
 		// Get the content for the viewer, setInput will call getElements in the
 		// contentProvider
-		updateTests(test);
+		updateTests(currentTestList);
 	}
 
 //	public TableViewer getViewer() {
