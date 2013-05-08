@@ -19,7 +19,7 @@ import edu.berkeley.eduride.feedbackview.EduRideFeedback;
 
 public class FeedbackViewTestRunListener extends TestRunListener {
 
-
+	
 
 
 	public FeedbackViewTestRunListener() {
@@ -38,22 +38,12 @@ public class FeedbackViewTestRunListener extends TestRunListener {
 		//ILaunchConfiguration configuraton = NavigatorActivator.getLastLaunchConfiguration();
 		IJavaProject proj = session.getLaunchedProject();
 		String javaSourceName = session.getTestRunName() + ".java";   // sigh - junit doesn't give us the package, so we have to fudge
-		TestList tl = new TestList(proj.getProject(), javaSourceName);
 		ITestElementContainer container = (ITestElementContainer) session.getChildren()[0];
 		ITestElement[] testElements = container.getChildren();
-		for (int i= 0; i < testElements.length; i++){
-			ITestElement testelement = testElements[i];
-			FailureTrace failuretrace = testelement.getFailureTrace();
-			
-			String observed;
-			if(failuretrace == null){
-				tl.test_results.get(i).updateSuccess(true);
-			} else {
-				observed = (String)failuretrace.getActual();
-				tl.test_results.get(i).updateObserved(observed);
-				tl.test_results.get(i).updateSuccess(false);
-			}
-		}
+
+
+		TestList tl = new TestList(proj.getProject(), javaSourceName, testElements);
+
 		EduRideFeedback.getDefault().asyncupdateTests(tl);
 	}
 }
