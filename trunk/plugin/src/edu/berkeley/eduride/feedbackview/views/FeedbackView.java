@@ -167,7 +167,7 @@ public class FeedbackView extends ViewPart {
 		    public void run() {
 		    	Table table = viewer.getTable();
 		    	if (test != null){
-		    		setContentDescription(test.test_results.get(0).getName());
+		    		setContentDescription(test.getName());
 					table.setBackground(white);
 					table.setForeground(black);
 					viewer.setInput(test.test_results);

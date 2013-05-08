@@ -13,16 +13,22 @@ import org.eclipse.jdt.junit.model.ITestRunSession;
 public class TestList {
 	
 	private ASTparse parse;
+	private String name;
 	public ArrayList<TestResult> test_results = new ArrayList<TestResult>();
 
 	public TestList(IProject proj, String javaFileName) {
 		parse = new ASTparse(proj,javaFileName);
 		//parse.getSource();
+		name = javaFileName.substring(0,javaFileName.length()-5);
 		ArrayList<MethodDeclaration> methods = parse.get_methods_by_annotation("@Test");
 		for(MethodDeclaration method:methods){
 			ArrayList<Annotation> annotations = parse.get_annotations(method);
-			test_results.add(new TestResult(annotations, javaFileName.substring(0,javaFileName.length()-5)));
+			test_results.add(new TestResult(annotations, name));
 		}
+	}
+	
+	public String getName() {
+		return name;
 	}
 //	public TestList(ITestRunSession session) {
 //		test_results = new ArrayList<TestResult>();
