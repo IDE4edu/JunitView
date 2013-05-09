@@ -1,6 +1,7 @@
 package edu.berkeley.eduride.feedbackview.model;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
@@ -21,6 +22,18 @@ public class TestResult {
 	private String expected;
 	private String observed;
 	private boolean hideWhenSuccessful = false;
+	
+
+	private Hashtable<String, String> annotations;
+	// TODO change flow to use setAnnotations, hasAnnotation, and getAnnotationValue instead
+	// of the loop through the annotations.  Logic will read better.
+	
+	/*
+	 * TODO write 
+	 *    update(ITestCaseElement tce) which updates the current TestResult with the contents of tce.
+	 *    refactor the constructor to share code with update().
+	 *     
+	 */
 	
 	public TestResult(ArrayList<Annotation> annotations, String methodname, ITestCaseElement tce) {
 		name = methodname;
@@ -78,6 +91,10 @@ public class TestResult {
 		}
 	}
 	
+	
+	// TODO need to make this smarter -- pull out the whole message,
+	// also return the error class, etc.  
+	
 	private String getFailureMessage(FailureTrace failuretrace){
 		String trace = failuretrace.getTrace();
 		int colon_index = trace.indexOf(":");
@@ -85,6 +102,39 @@ public class TestResult {
 		trace = trace.substring(colon_index+1, newline_index);
 		return trace.trim();
 	}
+	
+	
+	
+	private void setAnnotations(ArrayList<Annotation> arrlst) {
+		for (Annotation annotation : arrlst) {
+
+			IAnnotationBinding binding = annotation.resolveAnnotationBinding();
+			IMemberValuePairBinding[] valuePairs = binding
+					.getDeclaredMemberValuePairs();
+			String annotationName = binding.getName();
+			String annotationValue = null;
+			for (IMemberValuePairBinding valuePair : valuePairs) {
+				if (valuePair.getName().equals("value")) {
+					annotationValue = (String) valuePair.getValue();
+					break;
+				}
+			}
+			annotations.put(annotationName, annotationValue);
+		}
+	}
+		
+	private boolean hasAnnotation(String name) {
+		return annotations.contains(name);
+	}
+	
+	private String getAnnotationValue(String name) {
+		return annotations.get(name);
+	}
+	
+	
+	////////////// API
+	
+	
 	
 	public void updateSuccess(boolean success) {
 		this.success = success;

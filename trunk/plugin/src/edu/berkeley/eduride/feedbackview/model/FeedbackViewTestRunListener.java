@@ -15,8 +15,17 @@ import org.eclipse.jdt.junit.model.ITestElement.Result;
 import org.eclipse.jdt.junit.model.ITestElementContainer;
 import org.eclipse.jdt.junit.model.ITestRunSession;
 
-
 import edu.berkeley.eduride.feedbackview.EduRideFeedback;
+
+// TODO write this so it checks the particular session when inside testCaseFinished -- that is, can know
+//  that you are in the same session by checking testCaseElement.getTestRunSession(). little tricky, as you'll
+//  need to store sessions in sessionStarted, and find them in testCaseFinished and they have hopefully
+//  be stored already!
+
+// TODO figure out how to update TestList and TestResult rather that make a new one everytime.  Maybe 
+//   each TestClass has only one TestList ever?  See TestListStore, although probably a better way to do it
+//   that that
+
 
 public class FeedbackViewTestRunListener extends TestRunListener {
 
@@ -33,6 +42,7 @@ public class FeedbackViewTestRunListener extends TestRunListener {
 	
 	
 	public void testCaseStarted (ITestCaseElement testCaseElement) {
+		
 		
 	}
 	

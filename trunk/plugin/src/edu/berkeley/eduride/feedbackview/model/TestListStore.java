@@ -22,8 +22,8 @@ public class TestListStore {
 		if (store.containsKey(key)) {
 			tl = store.get(key);
 		} else {
-			tl = new TestList(proj, javaFileName);
-			store.put(key, tl);
+//			tl = new TestList(proj, javaFileName);
+//			store.put(key, tl);
 		}
 		return tl;
 	}
@@ -33,8 +33,8 @@ public class TestListStore {
 		if (proj.exists()) {
 			String key = makeKey(proj, javaFileName);
 			if (!(store.containsKey(key))) {
-				TestList tl = new TestList(proj, javaFileName);
-				store.put(key, tl);
+//				TestList tl = new TestList(proj, javaFileName);
+//				store.put(key, tl);
 			}
 		}
 	}

@@ -24,7 +24,7 @@ public class TestList {
 		parse = new ASTparse(proj,javaFileName);
 		//parse.getSource();
 		name = javaFileName.substring(0,javaFileName.length()-5);
-		ArrayList<MethodDeclaration> methods = parse.get_methods_by_annotation("@Test");
+		//ArrayList<MethodDeclaration> methods = parse.get_methods_by_annotation("@Test");
 		for(ITestCaseElement tce: testCaseElements) {
 			String methodName = tce.getTestMethodName();
 			ArrayList<Annotation> annotations = parse.get_annotations(methodName);
@@ -42,6 +42,7 @@ public class TestList {
 	public String getName() {
 		return name;
 	}
+	
 //	public TestList(ITestRunSession session) {
 //		test_results = new ArrayList<TestResult>();
 //		ITestElementContainer container = (ITestElementContainer) session.getChildren()[0];
