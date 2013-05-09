@@ -222,9 +222,9 @@ public class FeedbackView extends ViewPart {
 //	}
 
 	private void createColumns(final Composite parent, final TableViewer viewer) {
-		String[] titles = { "Success", "Name", "Description", "Expected",
+		String[] titles = { "Success", "Name", "Message", "Expected",
 				"Observed" };
-		int[] bounds = { 100, 100, 100, 100, 100 };
+		int[] bounds = { 80, 120, 200, 100, 100 };
 		System.out.println("creatingColumns");
 		// First column is the name
 		TableViewerColumn col = createTableViewerColumn(titles[0], bounds[0], 0);
@@ -264,7 +264,7 @@ public class FeedbackView extends ViewPart {
 			@Override
 			public String getText(Object element) {
 				TestResult t = (TestResult) element;
-				return t.getDescription();
+				return t.getMessage();
 			}
 		});
 		/*******/

@@ -50,7 +50,7 @@ public class FeedbackViewTestRunListener extends TestRunListener {
 		ArrayList<ITestElement> testElements = new ArrayList<ITestElement>();
 		testElements.addAll(Arrays.asList(container.getChildren()));
 
-		TestList tl = new TestList(proj.getProject(), javaSourceName, testElements, testCaseElements));
+		TestList tl = new TestList(proj.getProject(), javaSourceName, testElements, testCaseElements);
 
 		EduRideFeedback.getDefault().asyncupdateTests(tl);
 	}
