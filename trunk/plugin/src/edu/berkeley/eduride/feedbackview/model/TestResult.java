@@ -10,6 +10,8 @@ import org.eclipse.jdt.junit.model.ITestCaseElement;
 import org.eclipse.jdt.junit.model.ITestElement.FailureTrace;
 import org.eclipse.jdt.junit.model.ITestElement.Result;
 
+import edu.berkeley.eduride.feedbackview.EduRideFeedback;
+
 
 public class TestResult {
 	
@@ -89,6 +91,8 @@ public class TestResult {
 			observed = failuretrace.getActual();
 			success = false;
 		}
+		
+		EduRideFeedback.logTestResult(tce.getTestClassName(), name, success, getMessage(), observed);
 	}
 	
 	

@@ -1,5 +1,7 @@
 package edu.berkeley.eduride.feedbackview;
 
+import java.util.ArrayList;
+
 import org.eclipse.jdt.internal.junit.ui.JUnitPlugin;
 import org.eclipse.jdt.internal.junit.ui.TestRunnerViewPart;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -179,5 +181,28 @@ public class EduRideFeedback extends AbstractUIPlugin {
 		});
 		
 	}
+	
+	
+	//////////////////////
+	////  Event listener stuff
 
+	
+	static ArrayList<FeedbackListener> listeners = new ArrayList<FeedbackListener>();
+
+	public static boolean registerListener(FeedbackListener l) {
+		boolean result = listeners.add(l);
+		return (result);
+	}
+
+	public static boolean removeListener(FeedbackListener l) {
+		return (listeners.remove(l));
+	}
+	
+    public static void logTestResult(String testClassName, String testName,
+			boolean success, String message, String observed) {
+    	for (FeedbackListener l : listeners) {
+    		l.logTestResult(testClassName, testName, success, message, observed);
+    	}
+    }
+	
 }
