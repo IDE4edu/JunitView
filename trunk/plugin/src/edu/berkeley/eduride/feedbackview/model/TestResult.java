@@ -25,6 +25,8 @@ public class TestResult {
 	private String observed;
 	private boolean hideWhenSuccessful = false;
 	
+	private final String DEFAULT_FAILURE_MSG = "Test failure.";
+	
 
 	private Hashtable<String, String> annotations;
 	// TODO change flow to use setAnnotations, hasAnnotation, and getAnnotationValue instead
@@ -95,16 +97,46 @@ public class TestResult {
 		EduRideFeedback.logTestResult(tce.getTestClassName(), name, success, getMessage(), observed);
 	}
 	
+
 	
 	// TODO need to make this smarter -- pull out the whole message,
-	// also return the error class, etc.  
-	
+	//   base things on the error class (assertion errors are different than runtime errors!).  
+	// junit error message is encoded in failure trace, urg
 	private String getFailureMessage(FailureTrace failuretrace){
-		String trace = failuretrace.getTrace();
-		int colon_index = trace.indexOf(":");
-		int newline_index = trace.indexOf("\n");
-		trace = trace.substring(colon_index+1, newline_index);
-		return trace.trim();
+		String message = failuretrace.getTrace().trim();
+		if (message.equals("")) {
+			// no error message?  hm?  return default error message
+			message = DEFAULT_FAILURE_MSG;
+		} else {
+			int colon_index = message.indexOf(":");   // first colon
+			int newline_index = message.indexOf("\n");
+			if (newline_index == -1) {
+				// wha?  Only one line?
+				if (colon_index == -1) {
+					// double wha?
+					message = DEFAULT_FAILURE_MSG;
+				} else {
+					// well, at least there is a colon...
+					message = message.substring(colon_index+1);
+				}
+			} else {
+				// multiple lines
+				if (colon_index == -1) {
+					// uh oh, didn't expect that...  Lets just return the first line
+					message = message.substring(0, newline_index);
+				} else {
+					if (colon_index > newline_index) {
+						// hm, first line didn't have a colon.  Test author didn't provide an error message
+						message  = DEFAULT_FAILURE_MSG;
+					} else {
+						// ok, this looks like a standard junit message in the errortrace
+						message = message.substring(colon_index+1, newline_index);
+					}
+				}
+			}
+		}
+		
+		return message.trim();
 	}
 	
 	

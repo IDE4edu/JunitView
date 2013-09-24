@@ -1,6 +1,8 @@
 package edu.berkeley.eduride.feedbackview.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.dom.Annotation;
@@ -14,16 +16,43 @@ import org.eclipse.jdt.junit.model.ITestElementContainer;
 import org.eclipse.jdt.junit.model.ITestRunSession;
 import org.eclipse.jdt.junit.model.ITestElement.FailureTrace;
 
+// it would be great to cache a lot of this, hm.
+
 public class TestList {
+
+	
+	static HashMap<IProject, HashMap<String, ASTparse>> ASTparseStore = new HashMap<IProject, HashMap<String, ASTparse>>();
+
+	// make and track a new ASTparse as necessary
+	static ASTparse getASTparse(IProject proj, String javaFileName) {
+		ASTparse parse;
+		HashMap<String, ASTparse> inProjStore;
+		inProjStore= ASTparseStore.get(proj);
+		if (inProjStore == null) {
+			// never seen this project before, so we need to do it all
+			inProjStore = new HashMap<String, ASTparse>();
+			parse = new ASTparse(proj, javaFileName);
+			inProjStore.put(javaFileName, parse);
+			ASTparseStore.put(proj, inProjStore);
+		} else {
+			parse = inProjStore.get(javaFileName);
+			if (parse == null) {
+				// we've seen this project, but never this file
+				parse = new ASTparse(proj, javaFileName);
+				inProjStore.put(javaFileName, parse);
+			}
+		}
+		return parse;
+	}
+	
 	
 	private ASTparse parse;
 	private String name;
 	public ArrayList<TestResult> test_results = new ArrayList<TestResult>();
 
-	public TestList(IProject proj, String javaFileName, ArrayList<ITestElement> testElements, ArrayList<ITestCaseElement> testCaseElements) {
-		parse = new ASTparse(proj,javaFileName);
-		//parse.getSource();
-		name = javaFileName.substring(0,javaFileName.length()-5);
+	public TestList(IProject proj, String testRunName, String javaFileName, ArrayList<ITestElement> testElements, ArrayList<ITestCaseElement> testCaseElements) {
+		parse = getASTparse(proj,javaFileName);
+		name = testRunName;
 		//ArrayList<MethodDeclaration> methods = parse.get_methods_by_annotation("@Test");
 		for(ITestCaseElement tce: testCaseElements) {
 			String methodName = tce.getTestMethodName();
