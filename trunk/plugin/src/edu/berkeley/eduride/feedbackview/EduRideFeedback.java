@@ -2,6 +2,7 @@ package edu.berkeley.eduride.feedbackview;
 
 import java.util.ArrayList;
 
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.junit.ui.JUnitPlugin;
 import org.eclipse.jdt.internal.junit.ui.TestRunnerViewPart;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -14,6 +15,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import edu.berkeley.eduride.feedbackview.model.JavaFeedbackListener;
 import edu.berkeley.eduride.feedbackview.model.TestList;
 import edu.berkeley.eduride.feedbackview.views.FeedbackView;
 
@@ -47,7 +49,7 @@ public class EduRideFeedback extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-
+		JavaCore.addElementChangedListener(new JavaFeedbackListener());
 	}
 
 	// getDefault().
