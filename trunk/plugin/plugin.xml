@@ -10,7 +10,7 @@
       </category>
       <view
             name="EduRide Feedback"
-            icon="icons/16-tag-pencil.gif"
+            icon="icons/16		JavaCore.add-tag-pencil.gif"
             category="edurideViewCategory"
             class="edu.berkeley.eduride.feedbackview.views.FeedbackView"
             id="plugin.views.FeedbackView">
