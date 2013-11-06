@@ -18,7 +18,7 @@ import org.eclipse.jdt.junit.model.ITestElement.FailureTrace;
 
 // it would be great to cache a lot of this, hm.
 
-public class TestList {
+public class TestList  {
 
 	
 	static HashMap<IProject, HashMap<String, ASTparse>> ASTparseStore = new HashMap<IProject, HashMap<String, ASTparse>>();

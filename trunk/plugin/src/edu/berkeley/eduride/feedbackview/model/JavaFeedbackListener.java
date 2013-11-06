@@ -16,12 +16,15 @@ import edu.berkeley.eduride.feedbackview.controller.FeedbackModelProvider;
 
 public class JavaFeedbackListener implements IElementChangedListener{
 
+	
+	
 	@Override
 	public void elementChanged(ElementChangedEvent elementChangedEvent) {
 		// TODO Auto-generated method stub
 		System.out.println("EDURDIE REPORTING IN WITH: "+elementChangedEvent);
 		System.out.println("Type: "+elementChangedEvent.getType());
 		System.out.println("Delta: "+elementChangedEvent.getDelta());
+		
 		IJavaElementDelta delta = elementChangedEvent.getDelta();
 		CompilationUnit cu = delta.getCompilationUnitAST();
 		
@@ -29,7 +32,7 @@ public class JavaFeedbackListener implements IElementChangedListener{
 		IJavaElement classfile = element.getAncestor(IJavaElement.CLASS_FILE);
 		try {
 			if(classfile.isStructureKnown()){
-				FeedbackModelProvider.updateModel(classfile.getHandleIdentifier(),elementChangedEvent);
+//				FeedbackModelProvider.updateModel(classfile.getHandleIdentifier(),elementChangedEvent);
 			} else {
 				//spit out compilation errors to view
 				IProblem[] problems = cu.getProblems();
@@ -41,8 +44,14 @@ public class JavaFeedbackListener implements IElementChangedListener{
 				}
 			}
 		} catch (JavaModelException e) {
+			e.printStackTrace();
+			return;
+		} catch (NullPointerException e) {
+			e.printStackTrace();
 			return;
 		}
+		
+		
 //		System.out.println("Messages: ");
 //		for(Message m: cu.getMessages()){
 //			System.out.println("\t"+m.getMessage());
