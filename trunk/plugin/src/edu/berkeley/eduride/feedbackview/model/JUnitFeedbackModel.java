@@ -1,6 +1,8 @@
 package edu.berkeley.eduride.feedbackview.model;
 
+import org.eclipse.core.resources.IResource;
 import org.eclipse.jdt.core.ElementChangedEvent;
+import org.eclipse.jdt.core.IJavaElement;
 
 public class JUnitFeedbackModel implements IJUnitFeedbackModel {
 
