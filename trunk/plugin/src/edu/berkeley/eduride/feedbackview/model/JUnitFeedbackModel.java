@@ -18,7 +18,7 @@ public class JUnitFeedbackModel implements IJUnitFeedbackModel {
 	
 	
 	public boolean hasRunConfigurationWithName(String runConfigName) {
-		
+		return false;
 	}
 	
 	

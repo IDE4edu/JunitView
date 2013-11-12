@@ -28,7 +28,7 @@ public class FeedbackModelProvider {
 		// - make a junit runconfig
 		// - ASTParse the test class
 		// - make a (at first blank) TestList
-		IFeedbackModel model = new JUnitFeedbackModel(javafile);
+		IFeedbackModel model = new JUnitFeedbackModel(javafile, );
 	}
 	
 	
