@@ -1,18 +1,25 @@
 package edu.berkeley.eduride.feedbackview.model;
 
-import org.eclipse.core.resources.IResource;
+import java.util.HashMap;
+
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.core.ElementChangedEvent;
 import org.eclipse.jdt.core.IJavaElement;
 
 public class JUnitFeedbackModel implements IJUnitFeedbackModel {
 
 	
-	ASTparse testFileParse;
+	public static HashMap<ILaunchConfigurationWorkingCopy, JUnitFeedbackModel> store 
+		= new HashMap<ILaunchConfigurationWorkingCopy, JUnitFeedbackModel>();
+	
+	//ASTparse testFileParse;
 	// a junit run configuration 
 	TestList tl;
 	
+	// - make a blank TestList (feedback model), using an ASTParse of testclass,
+	//    stored on launch config name as key
 	
-	public JUnitFeedbackModel(IResource testclass, IJavaElement theclass) {
+	public JUnitFeedbackModel(ILaunchConfigurationWorkingCopy lc) {
 		
 	}
 	
