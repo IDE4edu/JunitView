@@ -1,4 +1,4 @@
-package edu.berkeley.eduride.feedbackview.model;
+package edu.berkeley.eduride.feedbackview.controller;
 
 
 
@@ -18,6 +18,7 @@ import org.eclipse.jdt.junit.model.ITestElementContainer;
 import org.eclipse.jdt.junit.model.ITestRunSession;
 
 import edu.berkeley.eduride.feedbackview.EduRideFeedback;
+import edu.berkeley.eduride.feedbackview.model.TestList;
 
 // TODO write this so it checks the particular session when inside testCaseFinished -- that is, can know
 //  that you are in the same session by checking testCaseElement.getTestRunSession(). little tricky, as you'll

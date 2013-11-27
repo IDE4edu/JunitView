@@ -1,4 +1,4 @@
-package edu.berkeley.eduride.feedbackview.model;
+package edu.berkeley.eduride.feedbackview.controller;
 
 import java.util.Arrays;
 
@@ -14,7 +14,7 @@ import org.eclipse.jdt.core.dom.Message;
 import org.eclipse.jdt.junit.JUnitCore;
 
 import edu.berkeley.eduride.base_plugin.EduRideBase;
-import edu.berkeley.eduride.feedbackview.controller.FeedbackModelProvider;
+import edu.berkeley.eduride.feedbackview.model.IFeedbackModel;
 
 public class JavaFeedbackListener implements IElementChangedListener {
 

@@ -15,7 +15,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-import edu.berkeley.eduride.feedbackview.model.JavaFeedbackListener;
+import edu.berkeley.eduride.feedbackview.controller.JavaFeedbackListener;
 import edu.berkeley.eduride.feedbackview.model.TestList;
 import edu.berkeley.eduride.feedbackview.views.FeedbackView;
 

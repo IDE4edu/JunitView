@@ -18,44 +18,45 @@ import edu.berkeley.eduride.feedbackview.model.JUnitFeedbackModel;
 
 public class FeedbackModelProvider {
 
-	// this creates, stores, and returns the IFeedbackModels associated with
-	// java files and, possibly, steps within activity pages that use those java
-	// files
+	/*
+	 * this creates, stores, and returns the IFeedbackModels associated with
+	 * java files and, possibly, steps within activity pages that use those java
+	 * files
+	 */
 
-	static HashMap<IJavaElement, IFeedbackModel> defaultFeedbackModels = 
-			new HashMap<IJavaElement, IFeedbackModel>();
-	static HashMap<IJavaElement, HashMap<String, IFeedbackModel>> keyedFeedbackModels =
-			new HashMap<IJavaElement, HashMap<String, IFeedbackModel>>();
-	static FeedbackLaunchConfigurationShortcut flcs = new FeedbackLaunchConfigurationShortcut();
+	static HashMap<IJavaElement, IFeedbackModel> defaultFeedbackModels = new HashMap<IJavaElement, IFeedbackModel>();
+	static HashMap<IJavaElement, HashMap<String, IFeedbackModel>> keyedFeedbackModels = new HashMap<IJavaElement, HashMap<String, IFeedbackModel>>();
 
-	// if stepkey is null, then any step key will return the feedbackmodel for
-	// this testclass
+	/*
+	 * Generates a new feedback model for this java class and step key, based on
+	 * the junit testclass that is passed. Step key is a string, and should be
+	 * consistent with whoever calls getFeedbackModel(). It is only necessary in
+	 * the rare cases that multiple activities use this same java class with
+	 * different test classes, so that getFeedbackModel() will need to
+	 * differentiate.
+	 * 
+	 * if stepkey is 'null' here for the first time that the javaclass is
+	 * passed, then stepkey will be ignored in getFeedbackModel() -- that is,
+	 * there will be only one junit class associated with this java class.
+	 */
 	public static void setup(ITypeRoot source, String stepkey,
 			ITypeRoot testclass) {
 		// builds the right IFeedbackModel for this javafile (a
 		// JUnitFeedbackModel)
-		ILaunchConfigurationWorkingCopy lc;
-		try {
-			lc = flcs.createLaunchConfiguration(testclass);
-			//TODO we need to put more stuff into the model
-			IFeedbackModel model = new JUnitFeedbackModel(lc);
-			// store the default feedback model for this source file
-			if (!defaultFeedbackModels.containsKey(source)) {
-				defaultFeedbackModels.put(source, model);
-			}
-			// store the feedback model keyed on this stepkey (possibly null)
-			HashMap<String, IFeedbackModel> inner;
-			if (!keyedFeedbackModels.containsKey(source)) {
-				inner = new HashMap<String, IFeedbackModel>();
-			} else {
-				inner = keyedFeedbackModels.get(source);
-			}
-			inner.put(stepkey, model);
-
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		IFeedbackModel model = new JUnitFeedbackModel(testclass);
+		
+		// store the default feedback model for this source file
+		if (!defaultFeedbackModels.containsKey(source)) {
+			defaultFeedbackModels.put(source, model);
 		}
+		// store the feedback model keyed on this stepkey (possibly null)
+		HashMap<String, IFeedbackModel> inner;
+		if (!keyedFeedbackModels.containsKey(source)) {
+			inner = new HashMap<String, IFeedbackModel>();
+		} else {
+			inner = keyedFeedbackModels.get(source);
+		}
+		inner.put(stepkey, model);
 	}
 
 	// gets a IJavaElement pointing to a class (ITypeRoot)
@@ -69,6 +70,5 @@ public class FeedbackModelProvider {
 			return defaultFeedbackModels.get(source);
 		}
 	}
-
 
 }
