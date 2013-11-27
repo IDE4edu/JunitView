@@ -10,6 +10,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
@@ -32,84 +33,136 @@ public class ASTparse {
 	private Hashtable<String, ArrayList<Annotation>> annotations_of_a_methodname = new Hashtable<String, ArrayList<Annotation>>();
 
 
-	public ASTparse(IProject project, String test_class_name) {
-		this.project = project;
-		this.test_class_name = test_class_name;
-		getSource();
-	}
-
-	public void getSource() {
-
-		ICompilationUnit unit = null;
-
+//	public ASTparse(IProject project, String test_class_name) {
+//		this.project = project;
+//		this.test_class_name = test_class_name;
+//		getSource();
+//	}
+	
+	public ASTparse(ITypeRoot root){
 		try {
-			IPackageFragment[] packages = JavaCore.create(project)
-					.getPackageFragments();
-			for (IPackageFragment mypackage : packages) {
-				if (mypackage.getKind() == IPackageFragmentRoot.K_SOURCE) {
-					createAST(mypackage);
-				}
-
-			}
+			createAST(root);
 		} catch (JavaModelException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	private static CompilationUnit parse(ICompilationUnit unit) {
+//	public void getSource() {
+//
+//		ICompilationUnit unit = null;
+//
+//		try {
+//			IPackageFragment[] packages = JavaCore.create(project)
+//					.getPackageFragments();
+//			for (IPackageFragment mypackage : packages) {
+//				if (mypackage.getKind() == IPackageFragmentRoot.K_SOURCE) {
+//					createAST(mypackage);
+//				}
+//
+//			}
+//		} catch (JavaModelException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
+
+	private static CompilationUnit parse(ITypeRoot root) {
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		parser.setSource(unit);
+		parser.setSource(root);
 		parser.setResolveBindings(true);
 		return (CompilationUnit) parser.createAST(null); // parse
 	}
 
-	private void createAST(IPackageFragment mypackage)
+//	private void createAST(IPackageFragment mypackage)
+//			throws JavaModelException {
+//		for (ICompilationUnit unit : mypackage.getCompilationUnits()) {
+//			if (unit.getElementName().equals(test_class_name)){
+//				// Now create the AST for the ICompilationUnits
+//				CompilationUnit parse = parse(unit);
+//				MethodVisitor visitor = new MethodVisitor();
+//				parse.accept(visitor);
+//
+//				for (MethodDeclaration method : visitor.getMethods()) {
+//					List<Object> modifiers = method.modifiers();
+//					ArrayList<Annotation> annotations = new ArrayList<Annotation>();
+//
+//					for (int i = 0; i < modifiers.size(); i++){
+//						if (modifiers.get(i)instanceof Annotation){
+//							Annotation annotation = (Annotation) modifiers.get(i);
+//							String annotation_name = annotation.toString();
+//
+//							// annotations of a certain method
+//							annotations.add(annotation);
+//
+//							// methods with a certain annotation
+//							if(methods_by_annotation.get(annotation_name) == null){
+//								// new annotation
+//								ArrayList<MethodDeclaration> methods = new ArrayList<MethodDeclaration>();
+//								methods.add(method);
+//								methods_by_annotation.put(annotation_name, methods);
+//							} else{
+//								// seen annotation
+//								ArrayList<MethodDeclaration> methods = methods_by_annotation.get(annotation_name);
+//								methods.add(method);
+//								methods_by_annotation.put(annotation_name, methods);
+//							}
+//						}
+//					}
+//
+//					// annotations of a certain method
+//					annotations_of_a_method.put(method, annotations);
+//					annotations_of_a_methodname.put(method.getName().getFullyQualifiedName(), annotations);
+//
+//					//					String blah = method.toString();
+//					//					System.out.println("Method name: " + method.getName()
+//					//							+ " Return type: " + method.getReturnType2());
+//				}
+//			}
+//		}
+//	}
+	
+	private void createAST(ITypeRoot root)
 			throws JavaModelException {
-		for (ICompilationUnit unit : mypackage.getCompilationUnits()) {
-			if (unit.getElementName().equals(test_class_name)){
-				// Now create the AST for the ICompilationUnits
-				CompilationUnit parse = parse(unit);
-				MethodVisitor visitor = new MethodVisitor();
-				parse.accept(visitor);
+		CompilationUnit parse = parse(root);
+		MethodVisitor visitor = new MethodVisitor();
+		parse.accept(visitor);
 
-				for (MethodDeclaration method : visitor.getMethods()) {
-					List<Object> modifiers = method.modifiers();
-					ArrayList<Annotation> annotations = new ArrayList<Annotation>();
+		for (MethodDeclaration method : visitor.getMethods()) {
+			List<Object> modifiers = method.modifiers();
+			ArrayList<Annotation> annotations = new ArrayList<Annotation>();
 
-					for (int i = 0; i < modifiers.size(); i++){
-						if (modifiers.get(i)instanceof Annotation){
-							Annotation annotation = (Annotation) modifiers.get(i);
-							String annotation_name = annotation.toString();
-
-							// annotations of a certain method
-							annotations.add(annotation);
-
-							// methods with a certain annotation
-							if(methods_by_annotation.get(annotation_name) == null){
-								// new annotation
-								ArrayList<MethodDeclaration> methods = new ArrayList<MethodDeclaration>();
-								methods.add(method);
-								methods_by_annotation.put(annotation_name, methods);
-							} else{
-								// seen annotation
-								ArrayList<MethodDeclaration> methods = methods_by_annotation.get(annotation_name);
-								methods.add(method);
-								methods_by_annotation.put(annotation_name, methods);
-							}
-						}
-					}
+			for (int i = 0; i < modifiers.size(); i++){
+				if (modifiers.get(i)instanceof Annotation){
+					Annotation annotation = (Annotation) modifiers.get(i);
+					String annotation_name = annotation.toString();
 
 					// annotations of a certain method
-					annotations_of_a_method.put(method, annotations);
-					annotations_of_a_methodname.put(method.getName().getFullyQualifiedName(), annotations);
+					annotations.add(annotation);
 
-					//					String blah = method.toString();
-					//					System.out.println("Method name: " + method.getName()
-					//							+ " Return type: " + method.getReturnType2());
+					// methods with a certain annotation
+					if(methods_by_annotation.get(annotation_name) == null){
+						// new annotation
+						ArrayList<MethodDeclaration> methods = new ArrayList<MethodDeclaration>();
+						methods.add(method);
+						methods_by_annotation.put(annotation_name, methods);
+					} else{
+						// seen annotation
+						ArrayList<MethodDeclaration> methods = methods_by_annotation.get(annotation_name);
+						methods.add(method);
+						methods_by_annotation.put(annotation_name, methods);
+					}
 				}
 			}
+
+			// annotations of a certain method
+			annotations_of_a_method.put(method, annotations);
+			annotations_of_a_methodname.put(method.getName().getFullyQualifiedName(), annotations);
+
+			//					String blah = method.toString();
+			//					System.out.println("Method name: " + method.getName()
+			//							+ " Return type: " + method.getReturnType2());
 		}
 	}
 

@@ -38,6 +38,9 @@ public class TestResult {
 	 *    refactor the constructor to share code with update().
 	 *     
 	 */
+	public TestResult(ArrayList<Annotation> annotations, String methodName){
+		
+	}
 	
 	public TestResult(ArrayList<Annotation> annotations, String methodname, ITestCaseElement tce) {
 		name = methodname;
