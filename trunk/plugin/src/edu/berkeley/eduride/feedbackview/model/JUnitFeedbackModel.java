@@ -1,5 +1,6 @@
 package edu.berkeley.eduride.feedbackview.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.CoreException;
@@ -8,6 +9,8 @@ import org.eclipse.jdt.core.ElementChangedEvent;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ITypeRoot;
+import org.eclipse.jdt.core.dom.Annotation;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 
 public class JUnitFeedbackModel implements IJUnitFeedbackModel {
 
@@ -35,7 +38,12 @@ public class JUnitFeedbackModel implements IJUnitFeedbackModel {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		ArrayList<MethodDeclaration> methods = parse.get_methods_by_annotation("@Test");
+		for(MethodDeclaration method: methods){
+			String methodName = method.getName().getIdentifier();
+			ArrayList<Annotation> annotations = parse.get_annotations(method);
+			test_results.put(methodName, new TestResult(annotations, methodName));
+		}
 	}
 	
 	
@@ -43,11 +51,11 @@ public class JUnitFeedbackModel implements IJUnitFeedbackModel {
 		return false;
 	}
 	
-	
+	//override other one
 	@Override
-	public void updateModel(ElementChangedEvent elementChangedEvent) {
+	public void updateModel() {
 		// TODO Auto-generated method stub
-
+		//idea is run JUnit and update thingie
 	}
 
 }

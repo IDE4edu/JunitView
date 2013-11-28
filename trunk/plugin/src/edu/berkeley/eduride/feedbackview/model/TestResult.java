@@ -39,11 +39,7 @@ public class TestResult {
 	 *     
 	 */
 	public TestResult(ArrayList<Annotation> annotations, String methodName){
-		
-	}
-	
-	public TestResult(ArrayList<Annotation> annotations, String methodname, ITestCaseElement tce) {
-		name = methodname;
+		name = methodName;
 		for (Annotation annotation: annotations) {
 			IAnnotationBinding binding = annotation.resolveAnnotationBinding();
 			IMemberValuePairBinding[] valuePairs = binding.getDeclaredMemberValuePairs();
@@ -84,6 +80,81 @@ public class TestResult {
 		if (description == null) {
 			description = name;
 		}
+//		FailureTrace failuretrace = tce.getFailureTrace();
+//		if(failuretrace == null){
+//			success = true;
+//		} else {
+//			failmessage = getFailureMessage(failuretrace);
+//			if (!hasExpected()){
+//				// won't be here if there was an @Expected annotation, which takes precedence
+//				expected = failuretrace.getExpected();
+//			}
+//			observed = failuretrace.getActual();
+//			success = false;
+//		}
+//		
+//		EduRideFeedback.logTestResult(tce.getTestClassName(), name, success, getMessage(), observed);
+	}
+	
+//	public TestResult(ArrayList<Annotation> annotations, String methodname, ITestCaseElement tce) {
+//		name = methodname;
+//		for (Annotation annotation: annotations) {
+//			IAnnotationBinding binding = annotation.resolveAnnotationBinding();
+//			IMemberValuePairBinding[] valuePairs = binding.getDeclaredMemberValuePairs();
+//			//name = binding.getName();
+//			String annotationName = binding.getName();
+//			if(annotationName.equals("MethodCall")||annotationName.equals("Name")){
+//				for(IMemberValuePairBinding valuePair: valuePairs){
+//					if(valuePair.getName().equals("value")){
+//						name = (String)valuePair.getValue();
+//					}
+//				}
+//			}
+//			if(annotationName.equals("Expected")){
+//				for(IMemberValuePairBinding valuePair: valuePairs){
+//					if(valuePair.getName().equals("value")){
+//						expected = (String)valuePair.getValue();
+//					}
+//				}
+//			}
+//			if(annotationName.equals("Description")){
+//				for(IMemberValuePairBinding valuePair: valuePairs){
+//					if(valuePair.getName().equals("value")){
+//						description = (String)valuePair.getValue();
+//					}
+//				}
+//			}
+//			if(annotationName.equals("SuccessMessage")){
+//				for(IMemberValuePairBinding valuePair: valuePairs){
+//					if(valuePair.getName().equals("value")){
+//						successmessage = (String)valuePair.getValue();
+//					}
+//				}
+//			}
+//			if(annotationName.equals("hideWhenSuccessful")){
+//				hideWhenSuccessful = true;
+//			}
+//		}
+//		if (description == null) {
+//			description = name;
+//		}
+//		FailureTrace failuretrace = tce.getFailureTrace();
+//		if(failuretrace == null){
+//			success = true;
+//		} else {
+//			failmessage = getFailureMessage(failuretrace);
+//			if (!hasExpected()){
+//				// won't be here if there was an @Expected annotation, which takes precedence
+//				expected = failuretrace.getExpected();
+//			}
+//			observed = failuretrace.getActual();
+//			success = false;
+//		}
+//		
+//		EduRideFeedback.logTestResult(tce.getTestClassName(), name, success, getMessage(), observed);
+//	}
+	
+	public void updateModel(ITestCaseElement tce) {
 		FailureTrace failuretrace = tce.getFailureTrace();
 		if(failuretrace == null){
 			success = true;
@@ -99,8 +170,6 @@ public class TestResult {
 		
 		EduRideFeedback.logTestResult(tce.getTestClassName(), name, success, getMessage(), observed);
 	}
-	
-
 	
 	// TODO need to make this smarter -- pull out the whole message,
 	//   base things on the error class (assertion errors are different than runtime errors!).  
