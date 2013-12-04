@@ -15,6 +15,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import edu.berkeley.eduride.base_plugin.EduRideBase;
+import edu.berkeley.eduride.feedbackview.controller.FeedbackController;
 import edu.berkeley.eduride.feedbackview.controller.JavaFeedbackListener;
 import edu.berkeley.eduride.feedbackview.model.TestList;
 import edu.berkeley.eduride.feedbackview.views.FeedbackView;
@@ -29,6 +31,7 @@ public class EduRideFeedback extends AbstractUIPlugin {
 
 	// The shared instance
 	private static EduRideFeedback plugin = null;
+
 
 	private TestList test;
 
@@ -49,7 +52,11 @@ public class EduRideFeedback extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		JavaCore.addElementChangedListener(new JavaFeedbackListener());
+		
+		
+		//JavaCore.addElementChangedListener(new JavaFeedbackListener());
+		
+		initController();
 	}
 
 	// getDefault().
@@ -103,6 +110,31 @@ public class EduRideFeedback extends AbstractUIPlugin {
 		return activeWorkbenchWindow.getActivePage();
 	}
 
+	
+	///////////////////
+	/// controller
+	
+	
+	private FeedbackController controller;
+	
+	private void initController() {
+		controller = new FeedbackController();
+		
+		// gets JavaModel change events
+		JavaCore.addElementChangedListener(controller);
+		
+		// install on Editors for open events
+		// TODO edu.berkeley.eduride.base_plugin.util.IPartListenerInstaller
+
+		
+		
+	}
+	
+	
+	
+	
+	
+	
 	// //////////////////////////////////
 
 	private static FeedbackView feedbackView;

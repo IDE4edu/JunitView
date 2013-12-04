@@ -20,20 +20,11 @@ import org.eclipse.jdt.junit.model.ITestRunSession;
 import edu.berkeley.eduride.feedbackview.EduRideFeedback;
 import edu.berkeley.eduride.feedbackview.model.TestList;
 
-// TODO write this so it checks the particular session when inside testCaseFinished -- that is, can know
-//  that you are in the same session by checking testCaseElement.getTestRunSession(). little tricky, as you'll
-//  need to store sessions in sessionStarted, and find them in testCaseFinished and they have hopefully
-//  be stored already!
 
-// TODO figure out how to update TestList and TestResult rather that make a new one everytime.  Maybe 
-//   each TestClass has only one TestList ever?  See TestListStore, although probably a better way to do it
-//   than that
+public class JunitRunListener extends TestRunListener {
 
 
-public class FeedbackViewTestRunListener extends TestRunListener {
-
-
-	public FeedbackViewTestRunListener() {
+	public JunitRunListener() {
 		super();
 	}
 
@@ -98,7 +89,6 @@ public class FeedbackViewTestRunListener extends TestRunListener {
 	// listener methods
 	
 	public void sessionStarted(ITestRunSession session) {
-		EduRideFeedback.asyncShowFeedbackView();
 		// add session
 		trackSession(session);
 	}
@@ -116,15 +106,20 @@ public class FeedbackViewTestRunListener extends TestRunListener {
 	public void sessionFinished(ITestRunSession session) {
 		ArrayList<ITestCaseElement> testCaseElements = getCases(session);
 		
-		//ILaunchConfiguration configuraton = NavigatorActivator.getLastLaunchConfiguration();
 		IJavaProject proj = session.getLaunchedProject();
 		String testRunName = session.getTestRunName();
-		String javaSourceName = testRunName + ".java";   // sigh - junit doesn't give us the package, so we have to fudge
+		//ILaunchConfiguration configuraton = NavigatorActivator.getLastLaunchConfiguration();
 		
+		// used?
 		ITestElementContainer container = (ITestElementContainer) session.getChildren()[0];
 		ArrayList<ITestElement> testElements = new ArrayList<ITestElement>();
 		testElements.addAll(Arrays.asList(container.getChildren()));
-
+		
+		
+		 // sigh - junit doesn't give us the package, so we have to fudge
+		String javaSourceName = testRunName + ".java";  
+		
+		// TODO -- use JUnitFeedbackModel
 		TestList tl = new TestList(proj.getProject(), testRunName, javaSourceName, testElements, testCaseElements);
 
 		EduRideFeedback.getDefault().asyncupdateTests(tl);

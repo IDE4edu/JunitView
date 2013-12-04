@@ -1,8 +1,16 @@
 package edu.berkeley.eduride.feedbackview.controller;
 
+import java.util.ArrayList;
+
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jdt.core.ElementChangedEvent;
 import org.eclipse.jdt.core.IElementChangedListener;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeRoot;
+import org.eclipse.jdt.junit.model.ITestCaseElement;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -11,7 +19,12 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartReference;
 
 import edu.berkeley.eduride.base_plugin.EduRideBase;
+import edu.berkeley.eduride.feedbackview.EduRideFeedback;
+import edu.berkeley.eduride.feedbackview.model.FeedbackLaunchConfigurationShortcut;
 import edu.berkeley.eduride.feedbackview.model.IFeedbackModel;
+import edu.berkeley.eduride.feedbackview.model.IJUnitFeedbackModel;
+import edu.berkeley.eduride.feedbackview.model.JUnitFeedbackModel;
+import edu.berkeley.eduride.feedbackview.views.FeedbackView;
 
 
 
@@ -45,17 +58,21 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 
 
 	
-	IFeedbackModel currentModel;
+	IJUnitFeedbackModel currentModel;
 	ITypeRoot currentSource;
 	
-	public IFeedbackModel getCurrentModel() {
+	public IJUnitFeedbackModel getCurrentModel() {
 		return currentModel;
 	}
 	public ITypeRoot getCurrentSource() {
 		return currentSource;
 	}
 
-
+	
+	FeedbackLaunchConfigurationShortcut launchProvider = new FeedbackLaunchConfigurationShortcut();
+	// this could be null
+	ILaunchConfigurationWorkingCopy currentLaunchConfig = null;
+	
 	
 	
 	
@@ -71,10 +88,21 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 	 * @Param source the java source file, not the JUnit class
 	 */
 	public void follow(ITypeRoot source, String stepkey) {
-		currentModel = FeedbackModelProvider.getFeedbackModel(source, stepkey);
+		//TODO -- casting isn't right?  Maybe?
+		currentModel = (JUnitFeedbackModel) FeedbackModelProvider.getFeedbackModel(source, stepkey);
 		currentSource = source;
+		
+		IType testClassType = currentModel.getTestClass().findPrimaryType();
+		try {
+			currentLaunchConfig = launchProvider.createLaunchConfiguration(testClassType);
+		} catch (CoreException e) {
+			// TODO deal with null LaunchConfigs elsewhere, please
+			currentLaunchConfig = null;
+			e.printStackTrace();
+		}
+
 	}
-	
+
 	
 	
 	public void follow(ITypeRoot source) {
@@ -108,9 +136,40 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 	 * update the feedback: populate the current model, and tell the view to refresh
 	 */
 	public void update() {
+		// TODO -- if there is another one waiting, maybe stop this and
+		//  just do the last one?
 		
+		
+		// TODO do this every update?  Only update when the view is shown?  
+		EduRideFeedback.asyncShowFeedbackView();
+		
+		// launch JUnit for this class, will call updateModel()
+		NullProgressMonitor pm = new NullProgressMonitor();
+		try {
+			currentLaunchConfig.launch(ILaunchManager.RUN_MODE, pm);
+		} catch (CoreException e) {
+			System.err.println("Uh oh, feedback controller update broke bad, ma");
+			e.printStackTrace();
+		}
+		// updateModel() will get called, if things worked.
+	}	
+	
+	/*
+	 * Callback for launched JUnit test
+	 */
+	public void updateModel(ArrayList<ITestCaseElement> testCaseElements) {
+		// TODO -- what if current model gets changed here?
+		// really, we should have the currentModel sit inside the currentLauncher
+		// and, the JUnit launch will find the right launchconfig and therefore the right model
+		currentModel.updateModel(testCaseElements);  // launches junit test, Feedback
+		refreshView(currentModel);
 	}
 
+	
+	
+	private void refreshView(IJUnitFeedbackModel model) {
+		FeedbackView.refresh(model);
+	}
 	
 	
 	
