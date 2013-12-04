@@ -159,6 +159,7 @@ public class FeedbackView extends ViewPart {
 
 	}
 
+	// TODO -- rid ourselves of this, and make refresh(IJunitFeedbackModel) do the right thing
 	public void updateTests(TestList tl) {
 		currentTestList = tl;
 		Display.getDefault().asyncExec(new Runnable() {
