@@ -6,6 +6,6 @@ public interface IFeedbackModel {
 
 	//public IFeedbackModel(String handleIdentifier, ElementChangedEvent elementChangedEvent); 
 
-	public void updateModel() ;
+	public void updateModel(Object obj) ;
 	
 }
