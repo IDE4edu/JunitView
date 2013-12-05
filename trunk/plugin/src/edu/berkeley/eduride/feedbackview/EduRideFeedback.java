@@ -53,7 +53,6 @@ public class EduRideFeedback extends AbstractUIPlugin {
 		super.start(context);
 		plugin = this;
 		
-		
 		//JavaCore.addElementChangedListener(new JavaFeedbackListener());
 		
 		initController();
@@ -115,9 +114,9 @@ public class EduRideFeedback extends AbstractUIPlugin {
 	/// controller
 	
 	
-	private FeedbackController controller;
+	private static FeedbackController controller = null;
 	
-	private void initController() {
+	private static void initController() {
 		controller = new FeedbackController();
 		
 		// gets JavaModel change events
@@ -127,7 +126,10 @@ public class EduRideFeedback extends AbstractUIPlugin {
 		// TODO edu.berkeley.eduride.base_plugin.util.IPartListenerInstaller
 
 		
-		
+	}
+	
+	public static FeedbackController getController() {
+		return controller;
 	}
 	
 	

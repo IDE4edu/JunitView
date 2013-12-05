@@ -1,5 +1,8 @@
 package edu.berkeley.eduride.feedbackview.controller;
 
+
+//UNUSED
+
 import java.util.Arrays;
 
 import org.eclipse.jdt.core.ElementChangedEvent;
@@ -56,7 +59,7 @@ public class JavaFeedbackListener implements IElementChangedListener {
 				IFeedbackModel feedbackModel = FeedbackModelProvider
 						.getFeedbackModel(classfile, stepkey);
 				if (feedbackModel != null) {
-					feedbackModel.updateModel(elementChangedEvent);
+					//feedbackModel.updateModel(elementChangedEvent);
 				} else {
 					System.out.println("NULL FEEDBACK MODEL");
 				}

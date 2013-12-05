@@ -19,6 +19,7 @@ import org.eclipse.jdt.junit.model.ITestElement.Result;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 
+import edu.berkeley.eduride.feedbackview.EduRideFeedback;
 import edu.berkeley.eduride.feedbackview.controller.FeedbackController;
 
 public class JUnitFeedbackModel implements IJUnitFeedbackModel {
@@ -27,22 +28,25 @@ public class JUnitFeedbackModel implements IJUnitFeedbackModel {
 	static FeedbackLaunchConfigurationShortcut launchProvider = new FeedbackLaunchConfigurationShortcut();
 	
 	/////// saved once for each model -- we don't expect these to change.  
-	private final FeedbackController controller;
 	private final ITypeRoot testclass;
 	private final ASTparse parse;
 	// a null launchConfig means we've failed to set this up right...
 	private final ILaunchConfigurationWorkingCopy launchConfig;
 
 	
-	// store for results, gets updated each time
-	private HashMap<String, TestResult> testResults = new HashMap<String, TestResult>();
+	
+	public ITypeRoot getTestClass() {
+		return testclass;
+	}
+	
+	public ILaunchConfigurationWorkingCopy getLaunchConfig() {
+		return launchConfig;
+	}
 
 	
 	
-	public JUnitFeedbackModel(ITypeRoot testclass, FeedbackController controller) {
+	public JUnitFeedbackModel(ITypeRoot testclass) {
 		// set up the final fields
-		
-		this.controller = controller;
 		this.testclass = testclass;
 		parse = new ASTparse(testclass);
 		if (parse.structureKnown()) {
@@ -78,17 +82,18 @@ public class JUnitFeedbackModel implements IJUnitFeedbackModel {
 		return (launchConfig != null);
 	}
 	
-	
-	public ITypeRoot getTestClass() {
-		return testclass;
-	}
-	
+
 	
 
 	////////////////////////////
 
 	
+	// store for results, gets updated each time
+	private HashMap<String, TestResult> testResults = new HashMap<String, TestResult>();
+
+	
 	private NullProgressMonitor pm;
+	
 	public void updateModel() {
 		if (structureKnown()) {
 			pm = new NullProgressMonitor();
@@ -104,7 +109,7 @@ public class JUnitFeedbackModel implements IJUnitFeedbackModel {
 		
 	}
 	
-	
+	// called by static method fillThisModel() below
 	private void fillModel(ArrayList<ITestCaseElement> testCaseElements) {
 		for (ITestCaseElement tce : testCaseElements) {
 			String methodName = tce.getTestMethodName();
@@ -118,12 +123,22 @@ public class JUnitFeedbackModel implements IJUnitFeedbackModel {
 			//
 			// }
 		}
-		controller.modelFilled(this);
+		EduRideFeedback.getController().modelFilled(this);
+		
 	}
 
-	@Override
-	public void updateModel(Object obj) {
+
 	
+	////////
+	// just for debugging
+	public String toString() {
+		String ret = "";
+		ret += "JUnitFeedbackModel for testclass: " + testclass.getElementName() + "\n";
+		int i = 1;
+		for (TestResult result : testResults.values()) {
+			ret += "  Result " + i + ": " + result.getDescription() + "\n";
+		}
+		return ret;
 	}
 	
 	
@@ -134,12 +149,21 @@ public class JUnitFeedbackModel implements IJUnitFeedbackModel {
 	// so we can find this based on the name, for the JUnit session listeners to call
 	private static HashMap<String, JUnitFeedbackModel> modelStore = new HashMap<String, JUnitFeedbackModel>();
 	
+	// we'll track it, yo, but Java leaves us little way to detrack it.  
 	public static void trackThisModel(JUnitFeedbackModel model) {
-		// TODO stick this model in modelStore, yo
+		if (model.structureKnown()) {
+			String lcName = model.getLaunchConfig().getName();
+			modelStore.put(lcName, model);
+		}
 	}
 	
+	// called by JUnit session finished listener (see JUnitRunListener)
 	public static void fillThisModel(String launchConfigName, ArrayList<ITestCaseElement> testCaseElements) {
 		// TODO, find the relevant model from modelStore, and call its updateModel() method
+		JUnitFeedbackModel model = modelStore.get(launchConfigName);
+		if (model != null) {
+			model.fillModel(testCaseElements);
+		}
 	}
 	
 	

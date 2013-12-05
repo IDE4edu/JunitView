@@ -45,10 +45,12 @@ import edu.berkeley.eduride.feedbackview.views.FeedbackView;
 public class FeedbackController implements IElementChangedListener, IPartListener2
 {
 	
+	// update on every JavaModel change
 	boolean updateContinuously = true;
-	// this is set in the feedback view
+	// link view to editor -- set new feedback model when editor is opened 
 	private boolean followOnEditorChange = true;
 
+	// setters called from the viewer
 	public void setUpdateContinuously(boolean updateContinuously) {
 		this.updateContinuously = updateContinuously;
 	}
@@ -57,9 +59,10 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 	}
 
 
-	
-	IJUnitFeedbackModel currentModel;
-	ITypeRoot currentSource;
+	// the current model to be represented in the view
+	private IJUnitFeedbackModel currentModel;
+	// source code (in the editor) driving the current model -- not testclass!
+	private ITypeRoot currentSource;
 	
 	public IJUnitFeedbackModel getCurrentModel() {
 		return currentModel;
@@ -68,11 +71,7 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 		return currentSource;
 	}
 
-	
-	FeedbackLaunchConfigurationShortcut launchProvider = new FeedbackLaunchConfigurationShortcut();
-	// this could be null
-	ILaunchConfigurationWorkingCopy currentLaunchConfig = null;
-	
+
 	
 	
 	
@@ -91,15 +90,6 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 		//TODO -- casting isn't right?  Maybe?
 		currentModel = (JUnitFeedbackModel) FeedbackModelProvider.getFeedbackModel(source, stepkey);
 		currentSource = source;
-		
-		IType testClassType = currentModel.getTestClass().findPrimaryType();
-		try {
-			currentLaunchConfig = launchProvider.createLaunchConfiguration(testClassType);
-		} catch (CoreException e) {
-			// TODO deal with null LaunchConfigs elsewhere, please
-			currentLaunchConfig = null;
-			e.printStackTrace();
-		}
 
 	}
 
@@ -143,32 +133,26 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 		// TODO do this every update?  Only update when the view is shown?  
 		EduRideFeedback.asyncShowFeedbackView();
 		
-		// launch JUnit for this class, will call updateModel()
-		NullProgressMonitor pm = new NullProgressMonitor();
-		try {
-			currentLaunchConfig.launch(ILaunchManager.RUN_MODE, pm);
-		} catch (CoreException e) {
-			System.err.println("Uh oh, feedback controller update broke bad, ma");
-			e.printStackTrace();
-		}
-		// updateModel() will get called, if things worked.
-	}	
+		currentModel.updateModel();
+		// when filled, modelFilled(model) will be called.
+	}
+	
+	
+	
+
 	
 	/*
-	 * Callback for launched JUnit test
+	 * Callback when model is filled;
 	 */
-	public void updateModel(ArrayList<ITestCaseElement> testCaseElements) {
-		// TODO -- what if current model gets changed here?
-		// really, we should have the currentModel sit inside the currentLauncher
-		// and, the JUnit launch will find the right launchconfig and therefore the right model
-		currentModel.updateModel(testCaseElements);  // launches junit test, Feedback
-		refreshView(currentModel);
+	public void modelFilled(IJUnitFeedbackModel model) {
+		refreshView(model);
 	}
 
 	
 	
 	private void refreshView(IJUnitFeedbackModel model) {
-		FeedbackView.refresh(model);
+		// TODO -- worry about concurrency, stacked update/refreshes here?
+		EduRideFeedback.getFeedbackView().refresh(model);
 	}
 	
 	

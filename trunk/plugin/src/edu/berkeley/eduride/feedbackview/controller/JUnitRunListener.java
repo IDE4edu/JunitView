@@ -22,10 +22,10 @@ import edu.berkeley.eduride.feedbackview.model.JUnitFeedbackModel;
 import edu.berkeley.eduride.feedbackview.model.TestList;
 
 
-public class JunitRunListener extends TestRunListener {
+public class JUnitRunListener extends TestRunListener {
 
 
-	public JunitRunListener() {
+	public JUnitRunListener() {
 		super();
 	}
 

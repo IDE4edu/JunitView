@@ -1,5 +1,7 @@
 package edu.berkeley.eduride.feedbackview.model;
 
+// UNUSED, RIGHT?
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;

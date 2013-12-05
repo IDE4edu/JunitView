@@ -38,7 +38,7 @@
          id="FeedbackViewTestRunListener"
          name="edu.berkeley.eduride.feedbackview.model.FeedbackViewTestRunListener"
          point="org.eclipse.jdt.junit.testRunListeners">
-         <testRunListener class = "edu.berkeley.eduride.feedbackview.controller.JunitRunListener"/>
+         <testRunListener class = "edu.berkeley.eduride.feedbackview.controller.JUnitRunListener"/>
    </extension>
 
 </plugin>

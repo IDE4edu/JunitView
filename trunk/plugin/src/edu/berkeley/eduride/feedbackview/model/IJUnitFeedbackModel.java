@@ -10,4 +10,5 @@ public interface IJUnitFeedbackModel extends IFeedbackModel {
 	public void updateModel();
 	
 	public ITypeRoot getTestClass();
+	
 }

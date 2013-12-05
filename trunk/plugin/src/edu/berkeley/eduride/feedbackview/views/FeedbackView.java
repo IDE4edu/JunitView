@@ -158,6 +158,19 @@ public class FeedbackView extends ViewPart {
 		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().layout(true, true);
 
 	}
+	
+	
+	
+	////////////////////////////////
+	// refreshing the view 
+	
+	
+	public void refresh(IJUnitFeedbackModel model) {
+		// TODO  make it so, raymond
+		System.out.println("Feedback View asked to refresh: " + model.toString());
+	}
+	
+	
 
 	// TODO -- rid ourselves of this, and make refresh(IJunitFeedbackModel) do the right thing
 	public void updateTests(TestList tl) {
@@ -201,6 +214,15 @@ public class FeedbackView extends ViewPart {
 		    }
 		});
 	}
+	
+	
+	
+	
+	
+	
+	
+	////////////////////////////
+	
 
 	private void createViewer(Composite parent) {
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
