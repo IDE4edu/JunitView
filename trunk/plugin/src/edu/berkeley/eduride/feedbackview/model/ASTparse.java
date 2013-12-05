@@ -26,6 +26,7 @@ import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 
 public class ASTparse {
 
+	private boolean structureKnown;
 	private IProject project;
 	private String test_class_name;
 	private Hashtable<String, ArrayList<MethodDeclaration>> methods_by_annotation = new Hashtable<String, ArrayList<MethodDeclaration>>();
@@ -42,12 +43,18 @@ public class ASTparse {
 	public ASTparse(ITypeRoot root){
 		try {
 			createAST(root);
+			structureKnown = true;
 		} catch (JavaModelException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			structureKnown = false;
 		}
 	}
 
+	public boolean structureKnown() {
+		return structureKnown;
+	}
+	
 //	public void getSource() {
 //
 //		ICompilationUnit unit = null;

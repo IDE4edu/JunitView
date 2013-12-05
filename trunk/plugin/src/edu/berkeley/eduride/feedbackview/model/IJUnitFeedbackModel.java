@@ -7,7 +7,7 @@ import org.eclipse.jdt.junit.model.ITestCaseElement;
 
 public interface IJUnitFeedbackModel extends IFeedbackModel {
 
-	public void updateModel(ArrayList<ITestCaseElement> testCaseElements);
+	public void updateModel();
 	
 	public ITypeRoot getTestClass();
 }

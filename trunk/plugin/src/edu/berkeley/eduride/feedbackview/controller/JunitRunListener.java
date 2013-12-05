@@ -18,6 +18,7 @@ import org.eclipse.jdt.junit.model.ITestElementContainer;
 import org.eclipse.jdt.junit.model.ITestRunSession;
 
 import edu.berkeley.eduride.feedbackview.EduRideFeedback;
+import edu.berkeley.eduride.feedbackview.model.JUnitFeedbackModel;
 import edu.berkeley.eduride.feedbackview.model.TestList;
 
 
@@ -109,20 +110,22 @@ public class JunitRunListener extends TestRunListener {
 		IJavaProject proj = session.getLaunchedProject();
 		String testRunName = session.getTestRunName();
 		//ILaunchConfiguration configuraton = NavigatorActivator.getLastLaunchConfiguration();
+		JUnitFeedbackModel.fillThisModel(testRunName, testCaseElements);
+		
+		
 		
 		// used?
-		ITestElementContainer container = (ITestElementContainer) session.getChildren()[0];
-		ArrayList<ITestElement> testElements = new ArrayList<ITestElement>();
-		testElements.addAll(Arrays.asList(container.getChildren()));
-		
+//		ITestElementContainer container = (ITestElementContainer) session.getChildren()[0];
+//		ArrayList<ITestElement> testElements = new ArrayList<ITestElement>();
+//		testElements.addAll(Arrays.asList(container.getChildren()));
 		
 		 // sigh - junit doesn't give us the package, so we have to fudge
-		String javaSourceName = testRunName + ".java";  
+//		String javaSourceName = testRunName + ".java";  
 		
 		// TODO -- use JUnitFeedbackModel
-		TestList tl = new TestList(proj.getProject(), testRunName, javaSourceName, testElements, testCaseElements);
-
-		EduRideFeedback.getDefault().asyncupdateTests(tl);
+//		TestList tl = new TestList(proj.getProject(), testRunName, javaSourceName, testElements, testCaseElements);
+//		EduRideFeedback.getDefault().asyncupdateTests(tl);
+		
 		untrackSession(session);
 	}
 }
