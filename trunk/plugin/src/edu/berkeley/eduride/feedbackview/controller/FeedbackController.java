@@ -78,21 +78,6 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 	private boolean currentlyProcessing = false;
 	
 	
-	/////// used to be in EduRideFeedback activator.  It goes here if anywhere...
-	
-//	public void asyncupdateTests(TestList tl) {
-//		test = tl;
-//		getDisplay().asyncExec(new Runnable() {
-//			public void run() {
-//				//getFeedbackView();
-//				if (feedbackView != null) {
-//					feedbackView.updateTests(test);
-//				}
-//			}
-//		});
-//		
-//	}
-	
 	
 	
 	
@@ -208,6 +193,25 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 	public void refreshFinishedCallback(IJUnitFeedbackModel model) {
 		currentlyProcessing = false;
 	}
+	
+	
+	
+	/////// used to be in EduRideFeedback activator.  It goes here if anywhere...
+	
+//	public void asyncupdateTests(TestList tl) {
+//		test = tl;   // store it in the field so thread can get to it
+//		getDisplay().asyncExec(new Runnable() {
+//			public void run() {
+//				//getFeedbackView();
+//				if (feedbackView != null) {
+//					feedbackView.updateTests(test);
+//				}
+//			}
+//		});
+//		
+//	}
+	
+	
 	
 	
 	//////////////////////////
