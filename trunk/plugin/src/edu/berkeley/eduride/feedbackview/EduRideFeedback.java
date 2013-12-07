@@ -18,7 +18,6 @@ import org.osgi.framework.BundleContext;
 import edu.berkeley.eduride.base_plugin.EduRideBase;
 import edu.berkeley.eduride.feedbackview.controller.FeedbackController;
 import edu.berkeley.eduride.feedbackview.controller.JavaFeedbackListener;
-import edu.berkeley.eduride.feedbackview.model.TestList;
 import edu.berkeley.eduride.feedbackview.views.FeedbackView;
 
 /**
@@ -32,8 +31,6 @@ public class EduRideFeedback extends AbstractUIPlugin {
 	// The shared instance
 	private static EduRideFeedback plugin = null;
 
-
-	private TestList test;
 
 	/**
 	 * The constructor
@@ -205,18 +202,7 @@ public class EduRideFeedback extends AbstractUIPlugin {
 
 	// ////////////
 
-	public void asyncupdateTests(TestList tl) {
-		test = tl;
-		getDisplay().asyncExec(new Runnable() {
-			public void run() {
-				//getFeedbackView();
-				if (feedbackView != null) {
-					feedbackView.updateTests(test);
-				}
-			}
-		});
-		
-	}
+
 	
 	
 	//////////////////////

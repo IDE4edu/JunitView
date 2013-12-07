@@ -34,6 +34,8 @@ import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.*;
 import org.eclipse.swt.widgets.*;
+
+import edu.berkeley.eduride.feedbackview.EduRideFeedback;
 import edu.berkeley.eduride.feedbackview.model.*;
 
 public class FeedbackView extends ViewPart {
@@ -56,7 +58,8 @@ public class FeedbackView extends ViewPart {
 	private Color green = new Color(device, 0, 100, 0);
 	private Color red = new Color(device, 255, 0, 0);
 	
-	TestList currentTestList = null; //placeholder to pull from within a runnable
+	//
+	// TestList currentTestList = null; //placeholder to pull from within a runnable
 
 	/**
 	 * The constructor.
@@ -168,10 +171,12 @@ public class FeedbackView extends ViewPart {
 	public void refresh(IJUnitFeedbackModel model) {
 		// TODO  make it so, raymond
 		System.out.println("Feedback View asked to refresh: " + model.toString());
+		EduRideFeedback.getController().refreshFinishedCallback(model);
 	}
 	
 	
-
+	
+/*
 	// TODO -- rid ourselves of this, and make refresh(IJunitFeedbackModel) do the right thing
 	public void updateTests(TestList tl) {
 		currentTestList = tl;
@@ -215,7 +220,7 @@ public class FeedbackView extends ViewPart {
 		});
 	}
 	
-	
+*/
 	
 	
 	
@@ -235,7 +240,9 @@ public class FeedbackView extends ViewPart {
 		viewer.setContentProvider(new ArrayContentProvider());
 		// Get the content for the viewer, setInput will call getElements in the
 		// contentProvider
-		updateTests(currentTestList);
+		
+		// TODO really?
+		refresh(EduRideFeedback.getController().getCurrentModel());
 	}
 
 //	public TableViewer getViewer() {

@@ -123,7 +123,7 @@ public class JUnitFeedbackModel implements IJUnitFeedbackModel {
 			//
 			// }
 		}
-		EduRideFeedback.getController().modelFilled(this);
+		EduRideFeedback.getController().modelFilledCallback(this);
 		
 	}
 

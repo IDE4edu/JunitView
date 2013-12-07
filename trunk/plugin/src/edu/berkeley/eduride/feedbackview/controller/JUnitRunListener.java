@@ -19,7 +19,6 @@ import org.eclipse.jdt.junit.model.ITestRunSession;
 
 import edu.berkeley.eduride.feedbackview.EduRideFeedback;
 import edu.berkeley.eduride.feedbackview.model.JUnitFeedbackModel;
-import edu.berkeley.eduride.feedbackview.model.TestList;
 
 
 public class JUnitRunListener extends TestRunListener {

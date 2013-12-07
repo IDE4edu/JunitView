@@ -50,6 +50,7 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 	// link view to editor -- set new feedback model when editor is opened 
 	private boolean followOnEditorChange = true;
 
+	
 	// setters called from the viewer
 	public void setUpdateContinuously(boolean updateContinuously) {
 		this.updateContinuously = updateContinuously;
@@ -58,6 +59,8 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 		this.followOnEditorChange = followOnEditorChange;
 	}
 
+	
+	////// state
 
 	// the current model to be represented in the view
 	private IJUnitFeedbackModel currentModel;
@@ -72,10 +75,29 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 	}
 
 
+	private boolean currentlyProcessing = false;
+	
+	
+	/////// used to be in EduRideFeedback activator.  It goes here if anywhere...
+	
+//	public void asyncupdateTests(TestList tl) {
+//		test = tl;
+//		getDisplay().asyncExec(new Runnable() {
+//			public void run() {
+//				//getFeedbackView();
+//				if (feedbackView != null) {
+//					feedbackView.updateTests(test);
+//				}
+//			}
+//		});
+//		
+//	}
 	
 	
 	
-	/////// FOLLOW
+	
+	////////////////////
+	/////  FOLLOW
 	
 	
 	/*
@@ -88,7 +110,10 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 	 */
 	public void follow(ITypeRoot source, String stepkey) {
 		//TODO -- casting isn't right?  Maybe?
-		currentModel = (JUnitFeedbackModel) FeedbackModelProvider.getFeedbackModel(source, stepkey);
+		IJUnitFeedbackModel model = (JUnitFeedbackModel) FeedbackModelProvider.getFeedbackModel(source, stepkey);
+		
+		// TODO set up queue for when this changes?  eh.
+		currentModel = model;
 		currentSource = source;
 
 	}
@@ -120,31 +145,52 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 	
 	
 	
-	///// UPDATE
+	///////////////////////
+	//// UPDATE
+	
+	
+	// TODO be smart about updates queueing up on top of eachother.
+	/*
+	 * So, currentlyProcessing is a boolean which is set to true when update
+	 * starts, and false when the refresh has happened.  Could store the model in 
+	 * there in case it changes, but we mostly care about multliple updates happening
+	 * on the same model.
+	 * 
+	 * Solutions?
+	 *  - update() checks if there is a queue of calls, and clears all but the last one.
+	 *    (but, its doesn't care which call its on?)
+	 *  - if another one comes in while currently processing, have 
+	 *    modelFilledCallback() check and restart the update process, instead of 
+	 *    continuing to refresh the view.
+	 */
+	
 	
 	/*
 	 * update the feedback: populate the current model, and tell the view to refresh
 	 */
 	public void update() {
-		// TODO -- if there is another one waiting, maybe stop this and
-		//  just do the last one?
+		currentlyProcessing = true;
+		updateModel(currentModel);
 		
-		
-		// TODO do this every update?  Only update when the view is shown?  
+		// TODO 
+		// show this every update? 
+		// Or, check if the view is visible first, and only update if it is?
+		// do this in refreshView()?
 		EduRideFeedback.asyncShowFeedbackView();
-		
-		currentModel.updateModel();
-		// when filled, modelFilled(model) will be called.
 	}
 	
 	
 	
+	private void updateModel(IJUnitFeedbackModel model) {
+		model.updateModel();
+	}
+	
 
 	
 	/*
-	 * Callback when model is filled;
+	 * Callback when model is filled, from JUnitRunListener
 	 */
-	public void modelFilled(IJUnitFeedbackModel model) {
+	public void modelFilledCallback(IJUnitFeedbackModel model) {
 		refreshView(model);
 	}
 
@@ -156,6 +202,12 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 	}
 	
 	
+	/*
+	 * Callback when refresh is all done, from  FeedbackView
+	 */
+	public void refreshFinishedCallback(IJUnitFeedbackModel model) {
+		currentlyProcessing = false;
+	}
 	
 	
 	//////////////////////////
