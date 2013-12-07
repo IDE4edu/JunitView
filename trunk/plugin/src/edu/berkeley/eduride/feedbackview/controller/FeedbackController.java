@@ -8,8 +8,13 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jdt.core.ElementChangedEvent;
 import org.eclipse.jdt.core.IElementChangedListener;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaElementDelta;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeRoot;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.compiler.IProblem;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.junit.model.ITestCaseElement;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.ui.IEditorInput;
@@ -100,6 +105,9 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 		// TODO set up queue for when this changes?  eh.
 		currentModel = model;
 		currentSource = source;
+		
+		// DEBUG
+		System.err.println("Told to follow " + source.getElementName() + " so setting up model on " + model.getTestClass().getElementName());
 
 	}
 
@@ -162,8 +170,16 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 		// Or, check if the view is visible first, and only update if it is?
 		// do this in refreshView()?
 		EduRideFeedback.asyncShowFeedbackView();
+		
+		
+		// DEBUG
+		System.err.println("Starting update on model of " + currentModel.getTestClass().getElementName());
 	}
 	
+	public void updateNoCompile() {
+		currentlyProcessing = true;
+		refreshView(currentModel, false);
+	}
 	
 	
 	private void updateModel(IJUnitFeedbackModel model) {
@@ -176,14 +192,17 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 	 * Callback when model is filled, from JUnitRunListener
 	 */
 	public void modelFilledCallback(IJUnitFeedbackModel model) {
-		refreshView(model);
+		// DEBUG
+		System.err.println("Model filled callback on " + model.getTestClass().getElementName());
+
+		refreshView(model, true);
 	}
 
 	
 	
-	private void refreshView(IJUnitFeedbackModel model) {
+	private void refreshView(IJUnitFeedbackModel model, boolean compiles) {
 		// TODO -- worry about concurrency, stacked update/refreshes here?
-		EduRideFeedback.getFeedbackView().refresh(model);
+		EduRideFeedback.getFeedbackView().refresh(model, compiles);
 	}
 	
 	
@@ -194,6 +213,7 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 		currentlyProcessing = false;
 	}
 	
+
 	
 	
 	/////// used to be in EduRideFeedback activator.  It goes here if anywhere...
@@ -214,24 +234,100 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 	
 	
 	
-	//////////////////////////
-
+	
+	
+	///////////////////////////////
+	////  IElementChangedListener
+	
+	
 	/*
-	 * Check if we are 
-	 * (non-Javadoc)
-	 * @see org.eclipse.jdt.core.IElementChangedListener#elementChanged(org.eclipse.jdt.core.ElementChangedEvent)
+	 * 	  gets called on JavaModel changes (to anything), calls update() maybe
 	 */
 	@Override
 	public void elementChanged(ElementChangedEvent event) {
-		// TODO Auto-generated method stub
-		
+
+		ITypeRoot targetType = currentModel.getTestClass();
+		ITypeRoot eventType = null;
+
+		IJavaElement element = event.getDelta().getElement();
+		int typ = element.getElementType();
+		if (typ == IJavaElement.CLASS_FILE
+				|| typ == IJavaElement.COMPILATION_UNIT) {
+			eventType = (ITypeRoot) element;
+		} else {
+			eventType = (ITypeRoot) element
+					.getAncestor(IJavaElement.COMPILATION_UNIT);
+			if (eventType == null) {
+				eventType = (ITypeRoot) element
+						.getAncestor(IJavaElement.CLASS_FILE);
+			}
+		}
+
+		// See if we should ignore this event.
+		if (eventType == null) {
+			// DEBUG
+			System.out
+					.println("elementChanged: eventTYPE is null -- couldn't get a Type, I guess");
+			return;
+		}
+		if (!eventType.exists()) {
+			// DEBUG
+			System.out
+					.println("elementChanged: hm, eventType doesn't actually exist");
+			return;
+		}
+		if (!eventType.equals(targetType)) {
+			// DEBUG
+			System.out.println("elementChanged: we don't care about "
+					+ eventType.getElementName());
+			return;
+		}
+
+		// aha, something changed in our class. Lets do this.
+		try {
+			if (!eventType.isStructureKnown()) {
+				// DEBUG
+				System.out
+						.println("elementChanged: our type, but it doesn't compile");
+				IProblem[] problems = event.getDelta().getCompilationUnitAST()
+						.getProblems();
+				for (IProblem problem : problems) {
+					if (problem.isError()) {
+						// report problem
+						System.out.println("  -- error: " + problem);
+					}
+				} //DEBUG
+
+				updateNoCompile();
+			} else {
+				// DEBUG
+				System.out
+						.println("elementChanged: our type, and it compiles!  woot!");
+				update();
+
+			}
+
+		} catch (JavaModelException e) {
+			// whelp, failed trying isStructureKnown -- either doesn't exist, or
+			// ?
+			System.out
+					.println("elementChanged: we failed to figure out if it compiled, and died.");
+			e.printStackTrace();
+			return;
+		}
+
 	}
 	
 	
 	
 	
 	
-	////////////////////////
+	
+	
+	//////////////////////////
+	////  IPartListener2
+	
+	//calls follow(), sometimes
 	
 
 

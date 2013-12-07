@@ -168,9 +168,9 @@ public class FeedbackView extends ViewPart {
 	// refreshing the view 
 	
 	
-	public void refresh(IJUnitFeedbackModel model) {
+	public void refresh(IJUnitFeedbackModel model, boolean compiles) {
 		// TODO  make it so, raymond
-		System.out.println("Feedback View asked to refresh: " + model.toString());
+		System.out.println("Feedback View asked to refresh: " + model.toString() + " with compiles: " + compiles);
 		EduRideFeedback.getController().refreshFinishedCallback(model);
 	}
 	
@@ -241,8 +241,8 @@ public class FeedbackView extends ViewPart {
 		// Get the content for the viewer, setInput will call getElements in the
 		// contentProvider
 		
-		// TODO really?
-		refresh(EduRideFeedback.getController().getCurrentModel());
+		// TODO really?  compiles?  
+		refresh(EduRideFeedback.getController().getCurrentModel(), true);
 	}
 
 //	public TableViewer getViewer() {
