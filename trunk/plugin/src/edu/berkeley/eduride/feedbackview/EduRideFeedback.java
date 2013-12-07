@@ -17,7 +17,6 @@ import org.osgi.framework.BundleContext;
 
 import edu.berkeley.eduride.base_plugin.EduRideBase;
 import edu.berkeley.eduride.feedbackview.controller.FeedbackController;
-import edu.berkeley.eduride.feedbackview.controller.JavaFeedbackListener;
 import edu.berkeley.eduride.feedbackview.views.FeedbackView;
 
 /**
