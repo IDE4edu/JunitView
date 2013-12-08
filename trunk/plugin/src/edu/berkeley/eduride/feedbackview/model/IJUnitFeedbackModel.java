@@ -11,4 +11,6 @@ public interface IJUnitFeedbackModel extends IFeedbackModel {
 	
 	public ITypeRoot getTestClass();
 	
+	public ArrayList<TestResult> getViewInputAsArrayList();
+	
 }

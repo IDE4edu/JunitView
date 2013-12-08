@@ -165,6 +165,12 @@ public class JUnitFeedbackModel implements IJUnitFeedbackModel {
 			model.fillModel(testCaseElements);
 		}
 	}
+
+	@Override
+	public ArrayList<TestResult> getViewInputAsArrayList() {
+		// TODO Auto-generated method stub
+		return new ArrayList<TestResult> (testResults.values());
+	}
 	
 	
 

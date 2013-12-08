@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -171,6 +172,41 @@ public class FeedbackView extends ViewPart {
 	public void refresh(IJUnitFeedbackModel model, boolean compiles) {
 		// TODO  make it so, raymond
 		System.out.println("Feedback View asked to refresh: " + model.toString() + " with compiles: " + compiles);
+		Table table = viewer.getTable();
+    	if (compiles){
+    		setContentDescription(model.getTestClass().getElementName());
+			table.setBackground(white);
+			table.setForeground(black);
+			viewer.setInput(model.getViewInputAsArrayList());
+		} else {
+			setContentDescription("No associated currentTestList suite");
+			table.setBackground(gray);
+			table.setForeground(gray);
+			viewer.setInput(null);
+		}
+		// Make the selection available to other views
+		getSite().setSelectionProvider(viewer);
+		// Set the sorter for the table
+		//TODO: perhaps the @IGNORE magic happens here?
+		viewer.addFilter(new ViewerFilter() {
+			public boolean select(Viewer viewer, Object parentElement,
+					Object element) {
+				TestResult t = (TestResult) element;
+				return (!t.getSuccess() || !t.hideWhenSuccessful());
+			}
+		});
+		
+		// Layout the viewer
+		GridData gridData = new GridData();
+		gridData.verticalAlignment = GridData.FILL;
+		gridData.horizontalSpan = 2;
+		gridData.grabExcessHorizontalSpace = true;
+		gridData.grabExcessVerticalSpace = true;
+		gridData.horizontalAlignment = GridData.FILL;
+		viewer.getControl().setLayoutData(gridData);
+		
+		//try to update the layout
+		viewParent.layout();
 		EduRideFeedback.getController().refreshFinishedCallback(model);
 	}
 	
