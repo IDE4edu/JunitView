@@ -170,6 +170,10 @@ public class FeedbackView extends ViewPart {
 	
 	
 	public void refresh(IJUnitFeedbackModel model, boolean compiles) {
+		if (null == model) {
+			// lets do nothing in the case, mkay?
+			return;
+		}
 		// TODO  make it so, raymond
 		System.out.println("Feedback View asked to refresh: " + model.toString() + " with compiles: " + compiles);
 		Table table = viewer.getTable();

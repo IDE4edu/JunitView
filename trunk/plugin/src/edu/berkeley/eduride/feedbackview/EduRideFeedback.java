@@ -119,7 +119,7 @@ public class EduRideFeedback extends AbstractUIPlugin {
 		JavaCore.addElementChangedListener(controller);
 		
 		// install on Editors for open events
-		// TODO edu.berkeley.eduride.base_plugin.util.IPartListenerInstaller
+		edu.berkeley.eduride.base_plugin.util.IPartListenerInstaller.installOnAllExistingEditors(controller);
 
 		
 	}

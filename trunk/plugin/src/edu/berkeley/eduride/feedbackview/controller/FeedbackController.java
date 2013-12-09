@@ -159,6 +159,7 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 	
 	
 	/*
+	 * starting point for update process
 	 * update the feedback: populate the current model, and tell the view to refresh
 	 */
 	public void update() {
@@ -176,11 +177,17 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 		System.err.println("Starting update on model of " + currentModel.getTestClass().getElementName());
 	}
 	
+	/*
+	 * starting point for update process
+	 */
 	public void updateNoCompile() {
 		currentlyProcessing = true;
 		refreshView(currentModel, false);
 	}
 	
+	
+	////////////////
+	// internal methods or callbacks -- use above methods to *start* the update process
 	
 	private void updateModel(IJUnitFeedbackModel model) {
 		model.updateModel();
@@ -245,7 +252,12 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 	 */
 	@Override
 	public void elementChanged(ElementChangedEvent event) {
+		if (currentModel == null) {
+			// an early call, or something.
+			return;
+		}
 
+		// TODO deal with updateContinuously
 		ITypeRoot targetType = currentModel.getTestClass();
 		ITypeRoot eventType = null;
 
