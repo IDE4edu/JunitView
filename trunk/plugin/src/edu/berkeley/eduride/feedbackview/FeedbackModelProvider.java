@@ -1,4 +1,4 @@
-package edu.berkeley.eduride.feedbackview.controller;
+package edu.berkeley.eduride.feedbackview;
 
 import java.util.HashMap;
 
@@ -8,9 +8,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.core.ElementChangedEvent;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeRoot;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.junit.launcher.JUnitLaunchShortcut;
 
+import edu.berkeley.eduride.base_plugin.util.ISAFormatException;
 import edu.berkeley.eduride.feedbackview.model.FeedbackLaunchConfigurationShortcut;
 import edu.berkeley.eduride.feedbackview.model.IFeedbackModel;
 import edu.berkeley.eduride.feedbackview.model.IJUnitFeedbackModel;
@@ -40,7 +43,14 @@ public class FeedbackModelProvider {
 	 * there will be only one junit class associated with this java class.
 	 */
 	public static void setup(ITypeRoot source, String stepkey,
-			ITypeRoot testclass) {
+			ITypeRoot testclass)  throws ISAFormatException {
+		if (source == null) {
+			throw new ISAFormatException("Feedback Model exception: setup passed a null source type");
+		}
+		if (testclass == null) {
+			throw new ISAFormatException("Feedback Model exception: setup passed a null testclass type");
+		}
+		
 		// builds the right IFeedbackModel for this javafile (a
 		// JUnitFeedbackModel)
 		IFeedbackModel model = new JUnitFeedbackModel(testclass);
@@ -59,6 +69,28 @@ public class FeedbackModelProvider {
 		inner.put(stepkey, model);
 	}
 
+	
+	// throws exceptions in order to give feedback to ISA authors... eventually
+	public static void setup(IType source, String stepkey, IType testclass) throws ISAFormatException{
+		if (source == null) {
+			throw new ISAFormatException("Feedback Model exception: setup passed a null source type");
+		}
+		if (testclass == null) {
+			throw new ISAFormatException("Feedback Model exception: setup passed a null testclass type");
+		}
+		ITypeRoot rSource = source.getTypeRoot();
+		ITypeRoot rTestclass = testclass.getTypeRoot();
+		if (rSource == null) {
+			throw new ISAFormatException("Feedback Model exception: unable to determing type root of source file " + source.getFullyQualifiedName());
+		}
+		if (rTestclass == null) {
+			throw new ISAFormatException("Feedback Model exception: unable to determing typeroot of testclass file " + testclass.getFullyQualifiedName());
+		}
+		setup(rSource, stepkey, rTestclass);
+	}
+	
+	
+	
 	// gets a IJavaElement pointing to a class (ITypeRoot)
 	public static IFeedbackModel getFeedbackModel(IJavaElement source,
 			String stepkey) {
@@ -70,5 +102,8 @@ public class FeedbackModelProvider {
 			return defaultFeedbackModels.get(source);
 		}
 	}
+
+	
+	
 
 }

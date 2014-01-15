@@ -25,6 +25,7 @@ import org.eclipse.ui.IWorkbenchPartReference;
 
 import edu.berkeley.eduride.base_plugin.EduRideBase;
 import edu.berkeley.eduride.feedbackview.EduRideFeedback;
+import edu.berkeley.eduride.feedbackview.FeedbackModelProvider;
 import edu.berkeley.eduride.feedbackview.model.FeedbackLaunchConfigurationShortcut;
 import edu.berkeley.eduride.feedbackview.model.IFeedbackModel;
 import edu.berkeley.eduride.feedbackview.model.IJUnitFeedbackModel;
@@ -107,8 +108,9 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 		currentSource = source;
 		
 		// DEBUG
-		System.err.println("Told to follow " + source.getElementName() + " so setting up model on " + model.getTestClass().getElementName());
-
+		if (model != null) {
+			System.err.println("Told to follow " + source.getElementName() + " so setting up model on " + model.getTestClass().getElementName());
+		}
 	}
 
 	
