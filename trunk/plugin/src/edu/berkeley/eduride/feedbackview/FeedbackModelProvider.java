@@ -13,7 +13,7 @@ import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.junit.launcher.JUnitLaunchShortcut;
 
-import edu.berkeley.eduride.base_plugin.util.ISAFormatException;
+import edu.berkeley.eduride.base_plugin.isafile.ISAFormatException;
 import edu.berkeley.eduride.feedbackview.model.FeedbackLaunchConfigurationShortcut;
 import edu.berkeley.eduride.feedbackview.model.IFeedbackModel;
 import edu.berkeley.eduride.feedbackview.model.IJUnitFeedbackModel;

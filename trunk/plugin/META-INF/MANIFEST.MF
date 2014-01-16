@@ -17,4 +17,6 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: edu.berkeley.eduride.feedbackview
 Import-Package: edu.berkeley.eduride.base_plugin,
+ edu.berkeley.eduride.base_plugin.isafile,
+ edu.berkeley.eduride.base_plugin.model,
  edu.berkeley.eduride.base_plugin.util

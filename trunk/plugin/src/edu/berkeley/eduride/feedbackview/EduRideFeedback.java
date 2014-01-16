@@ -16,6 +16,8 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 import edu.berkeley.eduride.base_plugin.EduRideBase;
+import edu.berkeley.eduride.base_plugin.isafile.ISAParser;
+import edu.berkeley.eduride.feedbackview.controller.CodeStepCreatedListener;
 import edu.berkeley.eduride.feedbackview.controller.FeedbackController;
 import edu.berkeley.eduride.feedbackview.views.FeedbackView;
 
@@ -114,6 +116,11 @@ public class EduRideFeedback extends AbstractUIPlugin {
 	
 	private static void initController() {
 		controller = new FeedbackController();
+		
+		// TODO -- worry if things happen while the 4 following steps are partially taken?
+		
+		//register for Step creation events
+		ISAParser.registerStepCreatedListener(new CodeStepCreatedListener());
 		
 		// gets JavaModel change events
 		JavaCore.addElementChangedListener(controller);
