@@ -121,6 +121,10 @@ public class EduRideFeedback extends AbstractUIPlugin {
 		// install on Editors for open events
 		edu.berkeley.eduride.base_plugin.util.IPartListenerInstaller.installOnAllExistingEditors(controller);
 
+		FeedbackView v = feedbackView;
+		if (v != null) {
+			v.setController(controller);
+		}
 		
 	}
 	

@@ -25,6 +25,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IMarkSelection;
@@ -37,6 +38,7 @@ import org.eclipse.ui.*;
 import org.eclipse.swt.widgets.*;
 
 import edu.berkeley.eduride.feedbackview.EduRideFeedback;
+import edu.berkeley.eduride.feedbackview.controller.FeedbackController;
 import edu.berkeley.eduride.feedbackview.model.*;
 
 public class FeedbackView extends ViewPart {
@@ -45,11 +47,16 @@ public class FeedbackView extends ViewPart {
 	 */
 	public static final String ID = "plugin.views.FeedbackView";
 
+	private FeedbackController controller;
+	public void setController(FeedbackController c) {
+		controller = c;
+	}
+	
 	private Composite viewParent;
 	private TableViewer viewer;
-	private Action action1;
-	private Action action2;
-	private Action doubleClickAction;
+	private ActionToggle updateContinuously;
+	private ActionToggle followEditorFocus;
+	private Action updateNow;
 
 	// private Observer observe;
 	private final Device device = Display.getCurrent();
@@ -68,6 +75,8 @@ public class FeedbackView extends ViewPart {
 	public FeedbackView() {
 		super();
 	}
+	
+	
 
 	private PageBook pagebook;
 	private TableViewer tableviewer;
@@ -130,6 +139,9 @@ public class FeedbackView extends ViewPart {
 	 * it.
 	 */
 	public void createPartControl(Composite parent) {
+		
+		controller = EduRideFeedback.getController();
+		
 		viewParent = parent;
 		GridLayout layout = new GridLayout(2, false);
 		parent.setLayout(layout);
@@ -140,7 +152,7 @@ public class FeedbackView extends ViewPart {
 				.setHelp(viewer.getControl(), "plugin.viewer");
 		makeActions();
 		hookContextMenu();
-		hookDoubleClickAction();
+		//hookDoubleClickAction();
 		contributeToActionBars();
 
 		// the PageBook allows simple switching between two viewers
@@ -160,6 +172,8 @@ public class FeedbackView extends ViewPart {
 		getSite().getWorkbenchWindow().getSelectionService()
 				.addSelectionListener(listener);
 		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().layout(true, true);
+
+		
 
 	}
 	
@@ -282,7 +296,7 @@ public class FeedbackView extends ViewPart {
 		// contentProvider
 		
 		// TODO really?  compiles?  
-		refresh(EduRideFeedback.getController().getCurrentModel(), true);
+		//refresh(EduRideFeedback.getController().getCurrentModel(), true);
 	}
 
 //	public TableViewer getViewer() {
@@ -369,6 +383,26 @@ public class FeedbackView extends ViewPart {
 		return viewerColumn;
 	}
 
+	
+	
+	
+
+	/**
+	 * Passing the focus request to the viewer's control.
+	 */
+	public void setFocus() {
+		viewer.getControl().setFocus();
+		pagebook.setFocus();
+	}
+	
+	
+	
+	
+	
+	
+	
+	////////// toolbar, menus
+	
 	private void hookContextMenu() {
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(true);
@@ -382,6 +416,7 @@ public class FeedbackView extends ViewPart {
 		getSite().registerContextMenu(menuMgr, viewer);
 	}
 
+	
 	private void contributeToActionBars() {
 		IActionBars bars = getViewSite().getActionBars();
 		fillLocalPullDown(bars.getMenuManager());
@@ -389,73 +424,109 @@ public class FeedbackView extends ViewPart {
 	}
 
 	private void fillLocalPullDown(IMenuManager manager) {
-		manager.add(action1);
+		manager.add(updateNow);
 		manager.add(new Separator());
-		manager.add(action2);
+		manager.add(updateContinuously);
+		manager.add(followEditorFocus);
+
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
-		manager.add(action1);
-		manager.add(action2);
+		manager.add(updateNow);
+		manager.add(new Separator());
+		manager.add(followEditorFocus);
+		manager.add(updateContinuously);
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager) {
-		// eventually we'll want a icon here that toggles whether the view
-		// changes when the editor changes
-		manager.add(action1);
-		manager.add(action2);
+		manager.add(updateNow);
+		manager.add(new Separator());
+		manager.add(followEditorFocus);
+		manager.add(updateContinuously);
 	}
 
+	
+	
+	// cannot be anonymous, oh the grief
+	private class ActionToggle extends Action {
+		public ImageDescriptor onImage = null;
+		public ImageDescriptor offImage = null;
+		
+		public void setOnImage(ImageDescriptor img) {
+			onImage = img;
+		}
+		public void setOffImage(ImageDescriptor img) {
+			offImage = img;
+		}
+		public void setImage(boolean state) {
+			if (state) {
+				this.setImageDescriptor(onImage);
+			} else {
+				this.setImageDescriptor(offImage);
+			}
+		}
+	}
+	
 	private void makeActions() {
-		action1 = new Action() {
+		
+		updateContinuously = new ActionToggle() {
 			public void run() {
-				showMessage("Action 1 executed");
+				// update continuously
+				boolean state = controller.getUpdateContinuously();
+				controller.setUpdateContinuously(!state);
+				setImage(!state);
 			}
 		};
-		action1.setText("Action 1");
-		action1.setToolTipText("Action 1 tooltip");
-		action1.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+		updateContinuously.setText("Update Continuously");
+		updateContinuously.setToolTipText("Update Continuously");
+		updateContinuously.setOnImage(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_ADD));
+		updateContinuously.setOffImage(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_ETOOL_DELETE_DISABLED));
+		updateContinuously.setImage(controller.getUpdateContinuously());
+		
+		
+		followEditorFocus = new ActionToggle() {
+			public void run() {
+				boolean state = controller.getFollowOnEditorFocus();
+				controller.setFollowOnEditorFocus(!state);
+				setImage(!state);	
+			}
+		};
+		followEditorFocus.setText("Follow Editor Focus");
+		followEditorFocus.setToolTipText("Follow Editor Focus");
+		followEditorFocus.setOnImage(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_ELCL_SYNCED));
+		followEditorFocus.setOffImage(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_ELCL_SYNCED_DISABLED));
+		followEditorFocus.setImage(controller.getFollowOnEditorFocus());
+		
+		
+		updateNow = new Action() {
+			//IMG_TOOL_REDO
+			public void run() {
+				controller.update();
+				// updateNoCompile??!?
+			}
+		};
+		updateNow.setText("Update Now");
+		updateNow.setToolTipText("Update Now");
+		updateNow.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
 
-		action2 = new Action() {
-			public void run() {
-				showMessage("Action 2 executed");
-			}
-		};
-		action2.setText("Action 2");
-		action2.setToolTipText("Action 2 tooltip");
-		action2.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-		doubleClickAction = new Action() {
-			public void run() {
-				ISelection selection = viewer.getSelection();
-				Object obj = ((IStructuredSelection) selection)
-						.getFirstElement();
-				showMessage("Double-click detected on " + obj.toString());
-			}
-		};
 	}
 
-	private void hookDoubleClickAction() {
+/*
+  	private void hookDoubleClickAction() {
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
-				doubleClickAction.run();
+				updateNow.run();
 			}
 		});
 	}
+*/
 
-	private void showMessage(String message) {
-		MessageDialog.openInformation(viewer.getControl().getShell(),
-				"Test Plugin", message);
-	}
+	
+	
 
-	/**
-	 * Passing the focus request to the viewer's control.
-	 */
-	public void setFocus() {
-		viewer.getControl().setFocus();
-		pagebook.setFocus();
-	}
 }

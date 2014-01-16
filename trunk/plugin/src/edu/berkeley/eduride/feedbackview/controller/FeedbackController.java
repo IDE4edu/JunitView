@@ -54,15 +54,21 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 	// update on every JavaModel change
 	boolean updateContinuously = true;
 	// link view to editor -- set new feedback model when editor is opened 
-	private boolean followOnEditorChange = true;
+	private boolean followOnEditorFocus = true;
 
 	
-	// setters called from the viewer
+	// getters/setters called from the viewer
+	public boolean getUpdateContinuously() {
+		return updateContinuously;
+	}
 	public void setUpdateContinuously(boolean updateContinuously) {
 		this.updateContinuously = updateContinuously;
 	}
-	public void setFollowOnEditorChange(boolean followOnEditorChange) {
-		this.followOnEditorChange = followOnEditorChange;
+	public boolean getFollowOnEditorFocus() {
+		return followOnEditorFocus;
+	}
+	public void setFollowOnEditorFocus(boolean followOnEditorFocus) {
+		this.followOnEditorFocus = followOnEditorFocus;
 	}
 
 	
@@ -348,7 +354,7 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 	@Override
 	public void partActivated(IWorkbenchPartReference partRef) {
 		// TODO Auto-generated method stub
-		if (followOnEditorChange) {
+		if (followOnEditorFocus) {
 			IWorkbenchPart part = partRef.getPart(false);
 			IEditorPart editor = null;
 			if (part != null && part instanceof IEditorPart) {
