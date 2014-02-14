@@ -23,8 +23,12 @@ public class FeedbackModelProvider {
 
 	/*
 	 * this creates, stores, and returns the IFeedbackModels associated with
-	 * java files and, possibly, steps within activity pages that use those java
-	 * files
+	 * java classes.  
+	 * 
+	 * Note, sometimes there is more than one IFeedbackModel
+	 * for a particular class.  Here we use an additional string (Step name)
+	 * to distinguish
+	 * (TODO change the string into a Step)
 	 */
 
 	static HashMap<IJavaElement, IFeedbackModel> defaultFeedbackModels = new HashMap<IJavaElement, IFeedbackModel>();
@@ -44,12 +48,13 @@ public class FeedbackModelProvider {
 	 */
 	public static void setup(ITypeRoot source, String stepkey,
 			ITypeRoot testclass)  throws ISAFormatException {
-		if (source == null) {
-			throw new ISAFormatException("Feedback Model exception: setup passed a null source type");
-		}
-		if (testclass == null) {
-			throw new ISAFormatException("Feedback Model exception: setup passed a null testclass type");
-		}
+//this is caught in CodeStepCreatedListener now, so we can point to the isa file
+//		if (source == null) {
+//			throw new ISAFormatException("Feedback Model exception: setup passed a null source type");
+//		}
+//		if (testclass == null) {
+//			throw new ISAFormatException("Feedback Model exception: setup passed a null testclass type");
+//		}
 		
 		// builds the right IFeedbackModel for this javafile (a
 		// JUnitFeedbackModel)

@@ -3,8 +3,6 @@ package edu.berkeley.eduride.feedbackview;
 import java.util.ArrayList;
 
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.internal.junit.ui.JUnitPlugin;
-import org.eclipse.jdt.internal.junit.ui.TestRunnerViewPart;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
@@ -15,8 +13,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-import edu.berkeley.eduride.base_plugin.EduRideBase;
 import edu.berkeley.eduride.base_plugin.isafile.ISAParser;
+import edu.berkeley.eduride.base_plugin.util.IPartListenerInstaller;
 import edu.berkeley.eduride.feedbackview.controller.CodeStepCreatedListener;
 import edu.berkeley.eduride.feedbackview.controller.FeedbackController;
 import edu.berkeley.eduride.feedbackview.views.FeedbackView;
@@ -28,7 +26,6 @@ public class EduRideFeedback extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "EduRideFeedbackView"; //$NON-NLS-1$
-
 	// The shared instance
 	private static EduRideFeedback plugin = null;
 
@@ -52,7 +49,6 @@ public class EduRideFeedback extends AbstractUIPlugin {
 		plugin = this;
 		
 		//JavaCore.addElementChangedListener(new JavaFeedbackListener());
-		
 		initController();
 	}
 
@@ -111,29 +107,34 @@ public class EduRideFeedback extends AbstractUIPlugin {
 	///////////////////
 	/// controller
 	
-	
+	// singleton
 	private static FeedbackController controller = null;
 	
 	private static void initController() {
 		controller = new FeedbackController();
+		CodeStepCreatedListener cscListener = new CodeStepCreatedListener();
 		
 		// TODO -- worry if things happen while the 4 following steps are partially taken?
 		
-		//register for Step creation events
-		ISAParser.registerStepCreatedListener(new CodeStepCreatedListener());
+		//register for Step creation events, puts entries in FeedbackModelProvider hash tables
+		ISAParser.registerStepCreatedListener(cscListener);
 		
 		// gets JavaModel change events
 		JavaCore.addElementChangedListener(controller);
 		
 		// install on Editors for open events
-		edu.berkeley.eduride.base_plugin.util.IPartListenerInstaller.installOnAllExistingEditors(controller);
+		IPartListenerInstaller.installOnWorkbench(controller, "Feedback");
 
+		// deal with editors already opened?
+		
 		FeedbackView v = feedbackView;
 		if (v != null) {
 			v.setController(controller);
 		}
 		
 	}
+	
+	
 	
 	public static FeedbackController getController() {
 		return controller;
@@ -213,6 +214,8 @@ public class EduRideFeedback extends AbstractUIPlugin {
 	// ////////////
 
 
+	
+	
 	
 	
 	//////////////////////

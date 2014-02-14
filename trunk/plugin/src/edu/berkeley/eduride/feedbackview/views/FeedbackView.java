@@ -47,18 +47,13 @@ public class FeedbackView extends ViewPart {
 	 */
 	public static final String ID = "plugin.views.FeedbackView";
 
+	
 	private FeedbackController controller;
 	public void setController(FeedbackController c) {
 		controller = c;
 	}
 	
-	private Composite viewParent;
-	private TableViewer viewer;
-	private ActionToggle updateContinuously;
-	private ActionToggle followEditorFocus;
-	private Action updateNow;
 
-	// private Observer observe;
 	private final Device device = Display.getCurrent();
 	private Color white = new Color(device, 255, 255, 255);
 	private Color gray = new Color(device, 190, 190, 190);
@@ -66,9 +61,9 @@ public class FeedbackView extends ViewPart {
 	private Color green = new Color(device, 0, 100, 0);
 	private Color red = new Color(device, 255, 0, 0);
 	
-	//
-	// TestList currentTestList = null; //placeholder to pull from within a runnable
 
+
+	
 	/**
 	 * The constructor.
 	 */
@@ -77,11 +72,181 @@ public class FeedbackView extends ViewPart {
 	}
 	
 	
+	
+	private Composite viewParent;
+	private TableViewer viewer;
 
 	private PageBook pagebook;
 	private TableViewer tableviewer;
 	private TextViewer textviewer;
 
+	// buttons at the upper right of the view
+	private ActionToggle updateContinuously;
+	private ActionToggle followEditorFocus;
+	private Action updateNow;
+
+	
+	
+	/*
+	 * ---------------------------------------------------
+	 * Create the view
+	 */
+	public void createPartControl(Composite parent) {
+		
+		controller = EduRideFeedback.getController();
+		
+		viewParent = parent;
+		GridLayout layout = new GridLayout(2, false);
+		parent.setLayout(layout);
+		
+		createViewer(parent);
+		// Create the help context id for the viewer's control
+		PlatformUI.getWorkbench().getHelpSystem()
+				.setHelp(viewer.getControl(), "plugin.viewer");
+		makeActions();
+		hookContextMenu();
+		//hookDoubleClickAction();
+		contributeToActionBars();
+
+		// the PageBook allows simple switching between two viewers
+		pagebook = new PageBook(parent, SWT.NONE);
+
+		tableviewer = new TableViewer(pagebook, SWT.NONE);
+		tableviewer.setLabelProvider(new WorkbenchLabelProvider());
+		tableviewer.setContentProvider(new ArrayContentProvider());
+
+		// we're cooperative and also provide our selection
+		// at least for the tableviewer
+		getSite().setSelectionProvider(tableviewer);
+
+		textviewer = new TextViewer(pagebook, SWT.H_SCROLL | SWT.V_SCROLL);
+		textviewer.setEditable(false);
+
+		
+		getSite().getWorkbenchWindow().getSelectionService()
+				.addSelectionListener(listener);
+		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().layout(true, true);
+
+	
+	}
+	
+
+	private void createViewer(Composite parent) {
+		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
+				| SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER);
+		createColumns(parent, viewer);
+		final Table table = viewer.getTable();
+		table.setHeaderVisible(true);
+		table.setLinesVisible(true);
+
+		viewer.setContentProvider(new ArrayContentProvider());
+		// Get the content for the viewer, setInput will call getElements in the
+		// contentProvider
+		
+		// TODO really?  compiles?  
+		//refresh(EduRideFeedback.getController().getCurrentModel(), true);
+	}
+
+	
+//	public TableViewer getViewer() {
+//		return viewer;
+//	}
+
+	
+	private void createColumns(final Composite parent, final TableViewer viewer) {
+		String[] titles = { "Success", "Name", "Message", "Expected",
+				"Observed" };
+		int[] bounds = { 80, 120, 200, 100, 100 };
+		//System.out.println("creatingColumns");
+		TableViewerColumn col;
+		
+		// First column is the name
+		col = createTableViewerColumn(titles[0], bounds[0], 0);
+		col.setLabelProvider(new ColumnLabelProvider() {
+			@Override
+			public String getText(Object element) {
+				TestResult t = (TestResult) element;
+				if (t.getSuccess()) {
+					return "Correct";
+				} else {
+					return "Incorrect";
+				}
+			}
+
+			public Color getBackground(Object element) {
+				if (((TestResult) element).getSuccess()) {
+					return green;
+				} else {
+					return red;
+				}
+			}
+		});
+
+		col = createTableViewerColumn(titles[1], bounds[1], 1);
+		col.setLabelProvider(new ColumnLabelProvider() {
+			@Override
+			public String getText(Object element) {
+				TestResult t = (TestResult) element;
+				return t.getName();
+			}
+		});
+		/*********** DESCRIPTION IS GOING TO BE A TOOLTIP */
+
+		// Second column is the description
+		col = createTableViewerColumn(titles[2], bounds[2], 2);
+		col.setLabelProvider(new ColumnLabelProvider() {
+			@Override
+			public String getText(Object element) {
+				TestResult t = (TestResult) element;
+				return t.getMessage();
+			}
+		});
+		/*******/
+		col = createTableViewerColumn(titles[3], bounds[3], 3);
+		col.setLabelProvider(new ColumnLabelProvider() {
+			@Override
+			public String getText(Object element) {
+				TestResult t = (TestResult) element;
+				return t.getExpected();
+			}
+		});
+
+		col = createTableViewerColumn(titles[4], bounds[4], 4);
+		col.setLabelProvider(new ColumnLabelProvider() {
+			@Override
+			public String getText(Object element) {
+				TestResult t = (TestResult) element;
+				return t.getObserved();
+			}
+		});
+		/***********/
+		// grey out the titles
+	}
+
+	
+	
+	private TableViewerColumn createTableViewerColumn(String title, int bound,
+			final int colNumber) {
+		final TableViewerColumn viewerColumn = new TableViewerColumn(viewer,
+				SWT.NONE);
+		final TableColumn column = viewerColumn.getColumn();
+		column.setText(title);
+		column.setWidth(bound);
+		column.setResizable(true);
+		column.setMoveable(true);
+		return viewerColumn;
+	}
+
+	
+	
+	
+	
+	
+	/*
+	 * ---------------------------
+	 * Selection stuff
+	 */
+	
 	// the listener we register with the selection service
 	private ISelectionListener listener = new ISelectionListener() {
 		public void selectionChanged(IWorkbenchPart sourcepart,
@@ -134,50 +299,9 @@ public class FeedbackView extends ViewPart {
 		super.dispose();
 	}
 
-	/**
-	 * This is a callback that will allow us to create the viewer and initialize
-	 * it.
-	 */
-	public void createPartControl(Composite parent) {
-		
-		controller = EduRideFeedback.getController();
-		
-		viewParent = parent;
-		GridLayout layout = new GridLayout(2, false);
-		parent.setLayout(layout);
-		
-		createViewer(parent);
-		// Create the help context id for the viewer's control
-		PlatformUI.getWorkbench().getHelpSystem()
-				.setHelp(viewer.getControl(), "plugin.viewer");
-		makeActions();
-		hookContextMenu();
-		//hookDoubleClickAction();
-		contributeToActionBars();
-
-		// the PageBook allows simple switching between two viewers
-		pagebook = new PageBook(parent, SWT.NONE);
-
-		tableviewer = new TableViewer(pagebook, SWT.NONE);
-		tableviewer.setLabelProvider(new WorkbenchLabelProvider());
-		tableviewer.setContentProvider(new ArrayContentProvider());
-
-		// we're cooperative and also provide our selection
-		// at least for the tableviewer
-		getSite().setSelectionProvider(tableviewer);
-
-		textviewer = new TextViewer(pagebook, SWT.H_SCROLL | SWT.V_SCROLL);
-		textviewer.setEditable(false);
-
-		getSite().getWorkbenchWindow().getSelectionService()
-				.addSelectionListener(listener);
-		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().layout(true, true);
-
-		
-
-	}
 	
 	
+
 	
 	////////////////////////////////
 	// refreshing the view 
@@ -283,107 +407,6 @@ public class FeedbackView extends ViewPart {
 	////////////////////////////
 	
 
-	private void createViewer(Composite parent) {
-		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
-				| SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER);
-		createColumns(parent, viewer);
-		final Table table = viewer.getTable();
-		table.setHeaderVisible(true);
-		table.setLinesVisible(true);
-
-		viewer.setContentProvider(new ArrayContentProvider());
-		// Get the content for the viewer, setInput will call getElements in the
-		// contentProvider
-		
-		// TODO really?  compiles?  
-		//refresh(EduRideFeedback.getController().getCurrentModel(), true);
-	}
-
-//	public TableViewer getViewer() {
-//		return viewer;
-//	}
-
-	private void createColumns(final Composite parent, final TableViewer viewer) {
-		String[] titles = { "Success", "Name", "Message", "Expected",
-				"Observed" };
-		int[] bounds = { 80, 120, 200, 100, 100 };
-		System.out.println("creatingColumns");
-		// First column is the name
-		TableViewerColumn col = createTableViewerColumn(titles[0], bounds[0], 0);
-		col.setLabelProvider(new ColumnLabelProvider() {
-			@Override
-			public String getText(Object element) {
-				TestResult t = (TestResult) element;
-				if (t.getSuccess()) {
-					return "Correct";
-				} else {
-					return "Incorrect";
-				}
-			}
-
-			public Color getBackground(Object element) {
-				if (((TestResult) element).getSuccess()) {
-					return green;
-				} else {
-					return red;
-				}
-			}
-		});
-
-		col = createTableViewerColumn(titles[1], bounds[1], 1);
-		col.setLabelProvider(new ColumnLabelProvider() {
-			@Override
-			public String getText(Object element) {
-				TestResult t = (TestResult) element;
-				return t.getName();
-			}
-		});
-		/*********** DESCRIPTION IS GOING TO BE A TOOLTIP */
-
-		// Second column is the description
-		col = createTableViewerColumn(titles[2], bounds[2], 2);
-		col.setLabelProvider(new ColumnLabelProvider() {
-			@Override
-			public String getText(Object element) {
-				TestResult t = (TestResult) element;
-				return t.getMessage();
-			}
-		});
-		/*******/
-		col = createTableViewerColumn(titles[3], bounds[3], 3);
-		col.setLabelProvider(new ColumnLabelProvider() {
-			@Override
-			public String getText(Object element) {
-				TestResult t = (TestResult) element;
-				return t.getExpected();
-			}
-		});
-
-		col = createTableViewerColumn(titles[4], bounds[4], 4);
-		col.setLabelProvider(new ColumnLabelProvider() {
-			@Override
-			public String getText(Object element) {
-				TestResult t = (TestResult) element;
-				return t.getObserved();
-			}
-		});
-		/***********/
-		// grey out the titles
-	}
-
-	private TableViewerColumn createTableViewerColumn(String title, int bound,
-			final int colNumber) {
-		final TableViewerColumn viewerColumn = new TableViewerColumn(viewer,
-				SWT.NONE);
-		final TableColumn column = viewerColumn.getColumn();
-		column.setText(title);
-		column.setWidth(bound);
-		column.setResizable(true);
-		column.setMoveable(true);
-		return viewerColumn;
-	}
-
-	
 	
 	
 

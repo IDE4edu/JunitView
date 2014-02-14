@@ -23,7 +23,7 @@ import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartReference;
 
-import edu.berkeley.eduride.base_plugin.EduRideBase;
+import edu.berkeley.eduride.base_plugin.util.ProjectUtil;
 import edu.berkeley.eduride.feedbackview.EduRideFeedback;
 import edu.berkeley.eduride.feedbackview.FeedbackModelProvider;
 import edu.berkeley.eduride.feedbackview.model.FeedbackLaunchConfigurationShortcut;
@@ -35,7 +35,8 @@ import edu.berkeley.eduride.feedbackview.views.FeedbackView;
 
 
 /*
- * Controller class for Feedback, coordinating between IFeedbackModels and FeedbackView
+ * Controller singleton for Feedback, coordinating between IFeedbackModels and FeedbackView
+ * There is only one instance of this, registered to the feedbackview activator
  * 
  * Two main functions: 
  *   - follow -- switch the current focus 
@@ -122,7 +123,7 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 	
 	
 	public void follow(ITypeRoot source) {
-		follow(source, EduRideBase.getCurrentStep());
+		follow(source, ProjectUtil.getCurrentStep());
 	}
 	
 	
@@ -137,7 +138,7 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 			source = JavaUI.getEditorInputTypeRoot(input);
 		}
 		if (source != null) {
-			follow(source, EduRideBase.getCurrentStep());
+			follow(source, ProjectUtil.getCurrentStep());
 		}
 	}
 	
@@ -353,7 +354,6 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 
 	@Override
 	public void partActivated(IWorkbenchPartReference partRef) {
-		// TODO Auto-generated method stub
 		if (followOnEditorFocus) {
 			IWorkbenchPart part = partRef.getPart(false);
 			IEditorPart editor = null;
