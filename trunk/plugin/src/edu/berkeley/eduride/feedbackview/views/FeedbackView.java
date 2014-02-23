@@ -441,18 +441,29 @@ public class FeedbackView extends ViewPart {
 	private class ActionToggle extends Action {
 		public ImageDescriptor onImage = null;
 		public ImageDescriptor offImage = null;
-		
 		public void setOnImage(ImageDescriptor img) {
 			onImage = img;
 		}
 		public void setOffImage(ImageDescriptor img) {
 			offImage = img;
 		}
-		public void setImage(boolean state) {
+
+		public String onToolTip = "";
+		public String offToolTip = "";
+		public void setOnToolTip(String tooltip) {
+			this.onToolTip = tooltip;
+		}
+		public void setOffToolTip(String tooltip) {
+			this.offToolTip = tooltip;
+		}
+
+		public void setImageAndTooltip(boolean state) {
 			if (state) {
 				this.setImageDescriptor(onImage);
+				this.setToolTipText(onToolTip);
 			} else {
 				this.setImageDescriptor(offImage);
+				this.setToolTipText(offToolTip);
 			}
 		}
 	}
@@ -464,30 +475,32 @@ public class FeedbackView extends ViewPart {
 				// update continuously
 				boolean state = controller.getUpdateContinuously();
 				controller.setUpdateContinuously(!state);
-				setImage(!state);
+				setImageAndTooltip(!state);
 			}
 		};
 		updateContinuously.setText("Update Continuously");
-		updateContinuously.setToolTipText("Update Continuously");
+		updateContinuously.setOnToolTip("Click to turn off continuous updating (update on save only)");
+		updateContinuously.setOffToolTip("Click to turn on continuous updating (update after every keystroke)");
 		updateContinuously.setOnImage(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_ADD));
 		updateContinuously.setOffImage(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_ETOOL_DELETE_DISABLED));
-		updateContinuously.setImage(controller.getUpdateContinuously());
+		updateContinuously.setImageAndTooltip(controller.getUpdateContinuously());
 		
 		
 		followEditorFocus = new ActionToggle() {
 			public void run() {
 				boolean state = controller.getFollowOnEditorFocus();
 				controller.setFollowOnEditorFocus(!state);
-				setImage(!state);	
+				setImageAndTooltip(!state);	
 			}
 		};
 		followEditorFocus.setText("Follow Editor Focus");
-		followEditorFocus.setToolTipText("Follow Editor Focus");
+		followEditorFocus.setOnToolTip("Click to keep current tests even when changing editor focus");
+		followEditorFocus.setOffToolTip("Click to change which tests to run whenever changing editor focus");
 		followEditorFocus.setOnImage(PlatformUI.getWorkbench().getSharedImages()
 				.getImageDescriptor(ISharedImages.IMG_ELCL_SYNCED));
 		followEditorFocus.setOffImage(PlatformUI.getWorkbench().getSharedImages()
 				.getImageDescriptor(ISharedImages.IMG_ELCL_SYNCED_DISABLED));
-		followEditorFocus.setImage(controller.getFollowOnEditorFocus());
+		followEditorFocus.setImageAndTooltip(controller.getFollowOnEditorFocus());
 		
 		
 		updateNow = new Action() {
@@ -499,7 +512,7 @@ public class FeedbackView extends ViewPart {
 			}
 		};
 		updateNow.setText("Update Now");
-		updateNow.setToolTipText("Update Now");
+		updateNow.setToolTipText("Update Now (will save editor if necessary)");
 		updateNow.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
 				.getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
 
