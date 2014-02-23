@@ -42,13 +42,16 @@ public class CodeStepCreatedListener implements StepCreatedListener {
 				
 				// throws javaModelException?  
 				IType tempType = proj.findType(tst_qn);
+				if (tempType == null) {
+					throw new ISAFormatException("Bad name in testclass reference '" + tst_qn + "': couldn't find the class.");
+				}
 				tstModel = tempType.getTypeRoot();
 				
 				
 				FeedbackModelProvider.setup(srcModel, null, tstModel);
 
 			} catch (JavaModelException e) {
-				// TODO Auto-generated catch block
+				
 				throw new ISAFormatException("JavaModel Exception: "
 						+ e.getMessage());
 			}

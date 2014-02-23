@@ -10,6 +10,8 @@ public class FeedbackLaunchConfigurationShortcut extends JUnitLaunchShortcut {
 	@Override
 	public ILaunchConfigurationWorkingCopy createLaunchConfiguration(
 			IJavaElement element) throws CoreException {
-		return super.createLaunchConfiguration(element);
+		ILaunchConfigurationWorkingCopy lc = super.createLaunchConfiguration(element);
+		//lc.
+		return lc;
 	}
 }

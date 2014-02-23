@@ -1,36 +1,29 @@
 package edu.berkeley.eduride.feedbackview.controller;
 
-import java.util.ArrayList;
-
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.jdt.core.ElementChangedEvent;
 import org.eclipse.jdt.core.IElementChangedListener;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IJavaElementDelta;
-import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.compiler.IProblem;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.junit.model.ITestCaseElement;
 import org.eclipse.jdt.ui.JavaUI;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartReference;
 
-import edu.berkeley.eduride.base_plugin.util.ProjectUtil;
+import edu.berkeley.eduride.base_plugin.model.Step;
+import edu.berkeley.eduride.base_plugin.util.Console;
 import edu.berkeley.eduride.feedbackview.EduRideFeedback;
 import edu.berkeley.eduride.feedbackview.FeedbackModelProvider;
-import edu.berkeley.eduride.feedbackview.model.FeedbackLaunchConfigurationShortcut;
-import edu.berkeley.eduride.feedbackview.model.IFeedbackModel;
 import edu.berkeley.eduride.feedbackview.model.IJUnitFeedbackModel;
 import edu.berkeley.eduride.feedbackview.model.JUnitFeedbackModel;
-import edu.berkeley.eduride.feedbackview.views.FeedbackView;
+import edu.berkeley.eduride.feedbackview.model.JUnitFeedbackResults;
 
 
 
@@ -49,11 +42,11 @@ import edu.berkeley.eduride.feedbackview.views.FeedbackView;
  * -- java model change: basically, they edited something in the 
  * 
  */
-public class FeedbackController implements IElementChangedListener, IPartListener2
+public class FeedbackController implements IElementChangedListener, IPartListener2, IResourceChangeListener
 {
 	
 	// update on every JavaModel change
-	boolean updateContinuously = true;
+	boolean updateContinuously = false;
 	// link view to editor -- set new feedback model when editor is opened 
 	private boolean followOnEditorFocus = true;
 
@@ -116,14 +109,14 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 		
 		// DEBUG
 		if (model != null) {
-			System.err.println("Told to follow " + source.getElementName() + " so setting up model on " + model.getTestClass().getElementName());
+			Console.msg("Told to follow " + source.getElementName() + " so setting up model on " + model.getTestClass().getElementName());
 		}
 	}
 
 	
 	
 	public void follow(ITypeRoot source) {
-		follow(source, ProjectUtil.getCurrentStep());
+		follow(source, Step.getCurrentStep());
 	}
 	
 	
@@ -138,7 +131,7 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 			source = JavaUI.getEditorInputTypeRoot(input);
 		}
 		if (source != null) {
-			follow(source, ProjectUtil.getCurrentStep());
+			follow(source, Step.getCurrentStep());
 		}
 	}
 	
@@ -183,15 +176,16 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 		
 		
 		// DEBUG
-		System.err.println("Starting update on model of " + currentModel.getTestClass().getElementName());
+		Console.msg("Starting update on model of " + currentModel.getTestClass().getElementName());
 	}
 	
 	/*
-	 * starting point for update process
+	 * starting point for update process when things don't compile (so, no results?)
 	 */
 	public void updateNoCompile() {
 		currentlyProcessing = true;
-		refreshView(currentModel, false);
+		JUnitFeedbackResults res = null;
+		refreshView(currentModel, res, false);
 	}
 	
 	
@@ -207,18 +201,24 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 	/*
 	 * Callback when model is filled, from JUnitRunListener
 	 */
-	public void modelFilledCallback(IJUnitFeedbackModel model) {
+	public void resultsAttachedCallback(IJUnitFeedbackModel model, final JUnitFeedbackResults results) {
 		// DEBUG
-		System.err.println("Model filled callback on " + model.getTestClass().getElementName());
+		Console.msg("Results attached callback on " + model.getTestClass().getElementName());
 
-		refreshView(model, true);
+		refreshView(model, results, true);
 	}
 
 	
 	
-	private void refreshView(IJUnitFeedbackModel model, boolean compiles) {
+	private void refreshView(final IJUnitFeedbackModel model, final JUnitFeedbackResults results, final boolean compiles) {
 		// TODO -- worry about concurrency, stacked update/refreshes here?
-		EduRideFeedback.getFeedbackView().refresh(model, compiles);
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				EduRideFeedback.getFeedbackView().refresh(model, results, compiles);
+			}
+		});
+		
 	}
 	
 	
@@ -261,13 +261,17 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 	 */
 	@Override
 	public void elementChanged(ElementChangedEvent event) {
+		if (!updateContinuously) {
+			return;
+		}
 		if (currentModel == null) {
 			// an early call, or something.
 			return;
 		}
 
-		// TODO deal with updateContinuously
-		ITypeRoot targetType = currentModel.getTestClass();
+
+		
+		ITypeRoot targetType = currentModel.getSourceClass();
 		ITypeRoot eventType = null;
 
 		IJavaElement element = event.getDelta().getElement();
@@ -287,20 +291,17 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 		// See if we should ignore this event.
 		if (eventType == null) {
 			// DEBUG
-			System.out
-					.println("elementChanged: eventTYPE is null -- couldn't get a Type, I guess");
+			Console.msg("elementChanged: eventTYPE is null -- couldn't get a Type, I guess");
 			return;
 		}
 		if (!eventType.exists()) {
 			// DEBUG
-			System.out
-					.println("elementChanged: hm, eventType doesn't actually exist");
+			Console.msg("elementChanged: hm, eventType doesn't actually exist");
 			return;
 		}
 		if (!eventType.equals(targetType)) {
 			// DEBUG
-			System.out.println("elementChanged: we don't care about "
-					+ eventType.getElementName());
+			Console.msg ("elementChanged: we don't care about " + eventType.getElementName());
 			return;
 		}
 
@@ -308,22 +309,20 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 		try {
 			if (!eventType.isStructureKnown()) {
 				// DEBUG
-				System.out
-						.println("elementChanged: our type, but it doesn't compile");
+				Console.msg("elementChanged: our type, but it doesn't compile");
 				IProblem[] problems = event.getDelta().getCompilationUnitAST()
 						.getProblems();
 				for (IProblem problem : problems) {
 					if (problem.isError()) {
 						// report problem
-						System.out.println("  -- error: " + problem);
+						Console.msg("  -- error: " + problem);
 					}
 				} //DEBUG
 
 				updateNoCompile();
 			} else {
 				// DEBUG
-				System.out
-						.println("elementChanged: our type, and it compiles!  woot!");
+				Console.msg("elementChanged: our type, and it compiles!  woot!");
 				update();
 
 			}
@@ -331,9 +330,8 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 		} catch (JavaModelException e) {
 			// whelp, failed trying isStructureKnown -- either doesn't exist, or
 			// ?
-			System.out
-					.println("elementChanged: we failed to figure out if it compiled, and died.");
-			e.printStackTrace();
+			Console.msg("elementChanged: we failed to figure out if it compiled, and died.");
+			Console.err(e);
 			return;
 		}
 
@@ -407,6 +405,43 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 
 	@Override
 	public void partInputChanged(IWorkbenchPartReference partRef) {
+	}
+	
+	
+	/////////////////////////////////////
+	/*
+	 * IResourceChanged Listener
+	 * 
+	 * get file save events, maybe call update. 
+	 * NOTE: these will sometimes be caused by launch events from elementChangedListener, so
+	 * we need to avoid those
+	 * 
+	 */
+	
+	
+	@Override
+	public void resourceChanged(IResourceChangeEvent event) {
+		if (updateContinuously) {
+			// if update continuously is true, then typing will fire launches
+			//  which will save resources, so lets ignore all saves if update continuously is true.
+			return;
+		}
+		IResource eventResource = event.getResource();
+		if ((eventResource == null) || (eventResource.getType() != IResource.FILE)) {
+			return;
+		}
+		
+		IResource targetResource = currentModel.getSourceClass().findPrimaryType().getResource();
+		if (!(targetResource.equals(eventResource))) {
+			// not the same resource...
+			return;
+		}
+
+		// hokay, we got a save event!
+		// DEBUG
+		Console.msg("ResourceChanged: the resource of the currentModel match the resource changed: " + eventResource.getName());
+		update();
+		
 	}
 
 	

@@ -17,6 +17,7 @@ import org.eclipse.jdt.junit.model.ITestElement.Result;
 import org.eclipse.jdt.junit.model.ITestElementContainer;
 import org.eclipse.jdt.junit.model.ITestRunSession;
 
+import edu.berkeley.eduride.base_plugin.util.Console;
 import edu.berkeley.eduride.feedbackview.EduRideFeedback;
 import edu.berkeley.eduride.feedbackview.model.JUnitFeedbackModel;
 
@@ -34,11 +35,11 @@ public class JUnitRunListener extends TestRunListener {
 	//ArrayList<ITestCaseElement> testCaseElements = new ArrayList<ITestCaseElement>();
 
 	static private ArrayList<ITestCaseElement> trackSession(ITestRunSession session) {
-		System.out.println("session " + session.toString() + " tracked  -- hashcode " + session.hashCode());
+		Console.msg("junit session " + session.toString() + " tracked  -- hashcode " + session.hashCode());
 		if (sessions.containsKey(session)) {
 			// well, this is kind of a problem, hm...  Shouldn't happen, should it?
 			// if there are no test case elements, then its ok, but still...
-			System.err.println("Um, trying to add session " + session + " to active list but it's already there?  Wha?");
+			Console.err("Um, trying to add session " + session + " to active list but it's already there?  Wha?");
 			// I guess do nothing?
 			return null;
 		} else {
@@ -52,7 +53,7 @@ public class JUnitRunListener extends TestRunListener {
 		ITestRunSession session = testCaseElement.getTestRunSession();
 		if (session == null) {
 			// wha?
-			System.err.println("Hey!  ITestRunSession for ITestCaseElement " + testCaseElement + " is null.  This don't score, I must ignore.");
+			Console.err("Hey!  ITestRunSession for ITestCaseElement " + testCaseElement + " is null.  This don't score, I must ignore.");
 			return;
 		}
 		ArrayList<ITestCaseElement> testCaseElements = sessions.get(session);
@@ -72,7 +73,7 @@ public class JUnitRunListener extends TestRunListener {
 			return testCaseElements;
 		} else {
 			// um, hm.
-			System.err.println("Something wicked this way happened. Session was tracked but then value was null?  Say it ain't so! ");
+			Console.err("Something wicked this way happened. Session was tracked but then value was null?  Say it ain't so! ");
 			// return an empty arraylist I guess
 			return new ArrayList<ITestCaseElement>();
 		}
@@ -80,7 +81,7 @@ public class JUnitRunListener extends TestRunListener {
 
 	
 	static private void untrackSession(ITestRunSession session) {
-		System.out.println("session " + session.toString() + " untracked -- hashcode " + session.hashCode());
+		Console.msg("junit session " + session.toString() + " untracked -- hashcode " + session.hashCode());
 		sessions.remove(session);
 	}
 	
@@ -108,9 +109,9 @@ public class JUnitRunListener extends TestRunListener {
 		
 		IJavaProject proj = session.getLaunchedProject();
 		String testRunName = session.getTestRunName();
-		//ILaunchConfiguration configuraton = NavigatorActivator.getLastLaunchConfiguration();
-		JUnitFeedbackModel.fillThisModel(testRunName, testCaseElements);
 		
+		JUnitFeedbackModel.attachResultsToModel(testRunName, testCaseElements);
+		// TO BE THREAD SAFE, DON'T MUCK WITH testCaseElements after this!
 		
 		
 		// used?

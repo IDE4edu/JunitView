@@ -6,11 +6,13 @@ import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.junit.model.ITestCaseElement;
 
 public interface IJUnitFeedbackModel extends IFeedbackModel {
-
+	
 	public void updateModel();
 	
 	public ITypeRoot getTestClass();
+	public ITypeRoot getSourceClass();
+	public boolean structureKnown();
 	
-	public ArrayList<TestResult> getViewInputAsArrayList();
+	public void attachResults(ArrayList<ITestCaseElement> resultList);
 	
 }

@@ -2,6 +2,8 @@ package edu.berkeley.eduride.feedbackview;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
@@ -13,7 +15,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-import edu.berkeley.eduride.base_plugin.isafile.ISAParser;
+import edu.berkeley.eduride.base_plugin.isafile.ISAUtil;
 import edu.berkeley.eduride.base_plugin.util.IPartListenerInstaller;
 import edu.berkeley.eduride.feedbackview.controller.CodeStepCreatedListener;
 import edu.berkeley.eduride.feedbackview.controller.FeedbackController;
@@ -29,6 +31,9 @@ public class EduRideFeedback extends AbstractUIPlugin {
 	// The shared instance
 	private static EduRideFeedback plugin = null;
 
+	
+	public static CodeStepCreatedListener cscListener = null;
+	public static boolean earlyInstalled = false;
 
 	/**
 	 * The constructor
@@ -112,20 +117,28 @@ public class EduRideFeedback extends AbstractUIPlugin {
 	
 	private static void initController() {
 		controller = new FeedbackController();
-		CodeStepCreatedListener cscListener = new CodeStepCreatedListener();
+		if (cscListener == null) {
+			// whoa, early startup wasn't done?
+			cscListener = new CodeStepCreatedListener();
+		}
+
 		
 		// TODO -- worry if things happen while the 4 following steps are partially taken?
 		
 		//register for Step creation events, puts entries in FeedbackModelProvider hash tables
-		ISAParser.registerStepCreatedListener(cscListener);
-		
+		if (!earlyInstalled) {
+			ISAUtil.registerStepCreatedListener(cscListener);
+		}
+			
 		// gets JavaModel change events
 		JavaCore.addElementChangedListener(controller);
 		
 		// install on Editors for open events
 		IPartListenerInstaller.installOnWorkbench(controller, "Feedback");
-
-		// deal with editors already opened?
+		// TODO deal with editors already opened?
+		
+		// get Resource change events (file saves)
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(controller, IResourceChangeEvent.POST_CHANGE);
 		
 		FeedbackView v = feedbackView;
 		if (v != null) {

@@ -2,6 +2,7 @@ package edu.berkeley.eduride.feedbackview.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -19,6 +20,7 @@ import org.eclipse.jdt.junit.model.ITestElement.Result;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 
+import edu.berkeley.eduride.base_plugin.util.Console;
 import edu.berkeley.eduride.feedbackview.EduRideFeedback;
 import edu.berkeley.eduride.feedbackview.controller.FeedbackController;
 
@@ -28,35 +30,48 @@ public class JUnitFeedbackModel implements IJUnitFeedbackModel {
 	static FeedbackLaunchConfigurationShortcut launchProvider = new FeedbackLaunchConfigurationShortcut();
 	
 	/////// saved once for each model -- we don't expect these to change.  
-	private final ITypeRoot testclass;
+	private final String title;
+	private final ITypeRoot testClass;
+	private final ITypeRoot srcClass;
 	private final ASTparse parse;
 	// a null launchConfig means we've failed to set this up right...
 	private final ILaunchConfigurationWorkingCopy launchConfig;
 
 	
+	private final HashMap<MethodDeclaration, ArrayList<Annotation>> testMethods;
+	
 	
 	public ITypeRoot getTestClass() {
-		return testclass;
+		return testClass;
+	}
+	
+	public ITypeRoot getSourceClass() {
+		return srcClass;
 	}
 	
 	public ILaunchConfigurationWorkingCopy getLaunchConfig() {
 		return launchConfig;
 	}
 
+	public String getTitle() {
+		return title;
+	}
 	
-	
-	public JUnitFeedbackModel(ITypeRoot testclass) {
-		// set up the final fields
-		this.testclass = testclass;
-		parse = new ASTparse(testclass);
+	public JUnitFeedbackModel(ITypeRoot testClass, ITypeRoot srcClass) {
+		// set up the final fields except title, launchConfig
+		this.testClass = testClass;
+		this.srcClass = srcClass;
+		testMethods = new HashMap<MethodDeclaration, ArrayList<Annotation>>();
+		parse = new ASTparse(testClass);
+		
 		if (parse.structureKnown()) {
 			// set up launch config.
 			ILaunchConfigurationWorkingCopy tempConfig = null;
 			try {
-				tempConfig = launchProvider.createLaunchConfiguration(testclass
+				tempConfig = launchProvider.createLaunchConfiguration(testClass
 						.findPrimaryType());
 			} catch (CoreException e) {
-				e.printStackTrace();
+				Console.err(e);
 			}
 			if (tempConfig == null) {
 				// arg, we must give up
@@ -64,15 +79,33 @@ public class JUnitFeedbackModel implements IJUnitFeedbackModel {
 			} else {
 				launchConfig = tempConfig;
 			}
+			
+
+			//use the parse to get the annotations and create an empty hashSet
+			ArrayList<MethodDeclaration> methods =  parse.get_methods_by_annotation("@Test");
+			for (MethodDeclaration method: methods) {
+				ArrayList<Annotation> annotations = parse.get_annotations(method);
+				testMethods.put(method, annotations);
+			}
+			
+			// set title
+			String tempTitle = parse.getTitle();
+			if (tempTitle == null) {
+				title = "Tests in " + testClass.getElementName();
+			} else {
+				title = tempTitle;
+			}
+			
+			
 		} else {
 			launchConfig = null;
+			title = testClass.getElementName();
 		}
-		//use the parse to get the annotations and create an empty "TestResult"
-		ArrayList<MethodDeclaration> methods = parse.get_methods_by_annotation("@Test");
-		for(MethodDeclaration method: methods){
-			ArrayList<Annotation> annotations = parse.get_annotations(method);
-			String methodName = method.getName().getIdentifier();
-			testResults.put(methodName, new TestResult(annotations, methodName));
+		
+
+		
+		if (launchConfig != null) {
+			modelStore.put(launchConfig.getName(), this);
 		}
 	}
 	
@@ -87,43 +120,32 @@ public class JUnitFeedbackModel implements IJUnitFeedbackModel {
 
 	////////////////////////////
 
-	
-	// store for results, gets updated each time
-	private HashMap<String, TestResult> testResults = new HashMap<String, TestResult>();
-
-	
+		
 	private NullProgressMonitor pm;
 	
+	// Starting point of update, called from controller
 	public void updateModel() {
 		if (structureKnown()) {
+			
 			pm = new NullProgressMonitor();
 		
 			try {
 				launchConfig.launch(ILaunchManager.RUN_MODE, pm);
 			} catch (CoreException e) {
-				System.err.println("Uh oh, I couldn't launch an update for this model, ma");
-				e.printStackTrace();
+				Console.err("Uh oh, I couldn't launch an update for this model, ma");
+				Console.err(e);
 			}
 			// fillModel() will get called, if things worked.
+		} else {
+			//huh -- so test case is bad, uh...
 		}
 		
 	}
 	
-	// called by static method fillThisModel() below
-	private void fillModel(ArrayList<ITestCaseElement> testCaseElements) {
-		for (ITestCaseElement tce : testCaseElements) {
-			String methodName = tce.getTestMethodName();
-			testResults.get(methodName).updateModel(tce);
-			// TODO: need to deal with @Ignore
-			// boolean makeTestResult = true;
-			// if (tce.getTestResult(true).equals(Result.IGNORED)) {
-			// makeTestResult = false;
-			// }
-			// if (makeTestResult) {
-			//
-			// }
-		}
-		EduRideFeedback.getController().modelFilledCallback(this);
+	// called by static method attachResultsToModel() below
+	public void attachResults(ArrayList<ITestCaseElement> resultList) {
+		JUnitFeedbackResults results = new JUnitFeedbackResults(testMethods, resultList);
+		EduRideFeedback.getController().resultsAttachedCallback(this, results);
 		
 	}
 
@@ -133,10 +155,10 @@ public class JUnitFeedbackModel implements IJUnitFeedbackModel {
 	// just for debugging
 	public String toString() {
 		String ret = "";
-		ret += "JUnitFeedbackModel for testclass: " + testclass.getElementName() + "\n";
+		ret += "JUnitFeedbackModel for testclass: " + testClass.getElementName() + "\n";
 		int i = 1;
-		for (TestResult result : testResults.values()) {
-			ret += "  Result " + i + ": " + result.getDescription() + "\n";
+		for (MethodDeclaration method : testMethods.keySet()) {
+			ret += "  TestMethod " + i + ": " + method.getName() + "\n";
 		}
 		return ret;
 	}
@@ -158,20 +180,16 @@ public class JUnitFeedbackModel implements IJUnitFeedbackModel {
 	}
 	
 	// called by JUnit session finished listener (see JUnitRunListener)
-	public static void fillThisModel(String launchConfigName, ArrayList<ITestCaseElement> testCaseElements) {
+	public static void attachResultsToModel(String launchConfigName, final ArrayList<ITestCaseElement> testCaseElements) {
 		// TODO, find the relevant model from modelStore, and call its updateModel() method
 		JUnitFeedbackModel model = modelStore.get(launchConfigName);
+		
 		if (model != null) {
-			model.fillModel(testCaseElements);
+			model.attachResults(testCaseElements);
 		}
 	}
 
-	@Override
-	public ArrayList<TestResult> getViewInputAsArrayList() {
-		// TODO Auto-generated method stub
-		return new ArrayList<TestResult> (testResults.values());
-	}
-	
+
 	
 
 }

@@ -37,6 +37,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.*;
 import org.eclipse.swt.widgets.*;
 
+import edu.berkeley.eduride.base_plugin.util.Console;
 import edu.berkeley.eduride.feedbackview.EduRideFeedback;
 import edu.berkeley.eduride.feedbackview.controller.FeedbackController;
 import edu.berkeley.eduride.feedbackview.model.*;
@@ -157,7 +158,7 @@ public class FeedbackView extends ViewPart {
 		String[] titles = { "Success", "Name", "Message", "Expected",
 				"Observed" };
 		int[] bounds = { 80, 120, 200, 100, 100 };
-		//System.out.println("creatingColumns");
+		//Console.msg("feedbackview creatingColumns");
 		TableViewerColumn col;
 		
 		// First column is the name
@@ -307,25 +308,30 @@ public class FeedbackView extends ViewPart {
 	// refreshing the view 
 	
 	
-	public void refresh(IJUnitFeedbackModel model, boolean compiles) {
-		if (null == model) {
+	public void refresh(IJUnitFeedbackModel model, JUnitFeedbackResults results, boolean compiles) {
+		if (model == null) {
 			// lets do nothing in the case, mkay?
+			refreshFinished(model);
 			return;
 		}
-		// TODO  make it so, raymond
-		System.out.println("Feedback View asked to refresh: " + model.toString() + " with compiles: " + compiles);
+		
+		// Not compiling indicated by compiles==false, but also results==null;
+		String title = model.getTitle();
+
 		Table table = viewer.getTable();
+		
+
     	if (compiles){
-    		setContentDescription(model.getTestClass().getElementName());
 			table.setBackground(white);
 			table.setForeground(black);
-			viewer.setInput(model.getViewInputAsArrayList());
+			viewer.setInput(results.getResults());
 		} else {
-			setContentDescription("No associated currentTestList suite");
+			title = "(Compilation Errors) " + title;
 			table.setBackground(gray);
 			table.setForeground(gray);
 			viewer.setInput(null);
 		}
+    	setContentDescription(title);
 		// Make the selection available to other views
 		getSite().setSelectionProvider(viewer);
 		// Set the sorter for the table
@@ -349,60 +355,19 @@ public class FeedbackView extends ViewPart {
 		
 		//try to update the layout
 		viewParent.layout();
+		refreshFinished(model);
+		
+		//DEBUG
+		Console.msg("Feedback View asked to refresh model of '" + model.getTestClass().getElementName() + "' with compiles: " + compiles);
+
+	}
+	
+	
+	private void refreshFinished(IJUnitFeedbackModel model) {
 		EduRideFeedback.getController().refreshFinishedCallback(model);
 	}
 	
-	
-	
-/*
-	// TODO -- rid ourselves of this, and make refresh(IJunitFeedbackModel) do the right thing
-	public void updateTests(TestList tl) {
-		currentTestList = tl;
-		Display.getDefault().asyncExec(new Runnable() {
-		    public void run() {
-		    	Table table = viewer.getTable();
-		    	if (currentTestList != null){
-		    		setContentDescription(currentTestList.getName());
-					table.setBackground(white);
-					table.setForeground(black);
-					viewer.setInput(currentTestList.test_results);
-				} else {
-					setContentDescription("No associated currentTestList suite");
-					table.setBackground(gray);
-					table.setForeground(gray);
-					viewer.setInput(null);
-				}
-				// Make the selection available to other views
-				getSite().setSelectionProvider(viewer);
-				// Set the sorter for the table
-				viewer.addFilter(new ViewerFilter() {
-					public boolean select(Viewer viewer, Object parentElement,
-							Object element) {
-						TestResult t = (TestResult) element;
-						return (!t.getSuccess() || !t.hideWhenSuccessful());
-					}
-				});
-				
-				// Layout the viewer
-				GridData gridData = new GridData();
-				gridData.verticalAlignment = GridData.FILL;
-				gridData.horizontalSpan = 2;
-				gridData.grabExcessHorizontalSpace = true;
-				gridData.grabExcessVerticalSpace = true;
-				gridData.horizontalAlignment = GridData.FILL;
-				viewer.getControl().setLayoutData(gridData);
-				
-				//try to update the layout
-				viewParent.layout();
-		    }
-		});
-	}
-	
-*/
-	
-	
-	
-	
+
 	
 	////////////////////////////
 	
@@ -529,7 +494,8 @@ public class FeedbackView extends ViewPart {
 			//IMG_TOOL_REDO
 			public void run() {
 				controller.update();
-				// updateNoCompile??!?
+				
+				// should we force update, or choose updateNoCompile as appropriate??
 			}
 		};
 		updateNow.setText("Update Now");

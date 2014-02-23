@@ -40,5 +40,12 @@
          point="org.eclipse.jdt.junit.testRunListeners">
          <testRunListener class = "edu.berkeley.eduride.feedbackview.controller.JUnitRunListener"/>
    </extension>
+   <extension
+         name="FeedbackView"
+         point="EduRideBasePlugin.startup">
+      <startup
+            class="edu.berkeley.eduride.feedbackview.EarlyStartup">
+      </startup>
+   </extension>
 
 </plugin>

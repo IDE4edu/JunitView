@@ -28,7 +28,8 @@ public class FeedbackModelProvider {
 	 * Note, sometimes there is more than one IFeedbackModel
 	 * for a particular class.  Here we use an additional string (Step name)
 	 * to distinguish
-	 * (TODO change the string into a Step)
+	 * 
+	 * (TODO change the string into a Step, now that the model is in Base)
 	 */
 
 	static HashMap<IJavaElement, IFeedbackModel> defaultFeedbackModels = new HashMap<IJavaElement, IFeedbackModel>();
@@ -48,17 +49,15 @@ public class FeedbackModelProvider {
 	 */
 	public static void setup(ITypeRoot source, String stepkey,
 			ITypeRoot testclass)  throws ISAFormatException {
-//this is caught in CodeStepCreatedListener now, so we can point to the isa file
-//		if (source == null) {
-//			throw new ISAFormatException("Feedback Model exception: setup passed a null source type");
-//		}
-//		if (testclass == null) {
-//			throw new ISAFormatException("Feedback Model exception: setup passed a null testclass type");
-//		}
 		
 		// builds the right IFeedbackModel for this javafile (a
 		// JUnitFeedbackModel)
-		IFeedbackModel model = new JUnitFeedbackModel(testclass);
+		// TODO -- wat, is this getting called twice for every model?
+		IFeedbackModel model = new JUnitFeedbackModel(testclass, source);
+		if (!((JUnitFeedbackModel)model).structureKnown()) {
+			// hm, test class didn't compile or could make a launch configuration
+			throw new ISAFormatException("Problem setting up feedback model from " + testclass.getElementName());
+		}
 		
 		// store the default feedback model for this source file
 		if (!defaultFeedbackModels.containsKey(source)) {
@@ -68,6 +67,7 @@ public class FeedbackModelProvider {
 		HashMap<String, IFeedbackModel> inner;
 		if (!keyedFeedbackModels.containsKey(source)) {
 			inner = new HashMap<String, IFeedbackModel>();
+			keyedFeedbackModels.put(source, inner);
 		} else {
 			inner = keyedFeedbackModels.get(source);
 		}
