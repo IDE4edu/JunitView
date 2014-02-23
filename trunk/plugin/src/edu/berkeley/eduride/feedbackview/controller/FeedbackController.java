@@ -3,6 +3,7 @@ package edu.berkeley.eduride.feedbackview.controller;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ElementChangedEvent;
 import org.eclipse.jdt.core.IElementChangedListener;
 import org.eclipse.jdt.core.IJavaElement;
@@ -203,7 +204,7 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 	 */
 	public void resultsAttachedCallback(IJUnitFeedbackModel model, final JUnitFeedbackResults results) {
 		// DEBUG
-		Console.msg("Results attached callback on " + model.getTestClass().getElementName());
+		//Console.msg("Results attached callback on " + model.getTestClass().getElementName());
 
 		refreshView(model, results, true);
 	}
@@ -423,25 +424,19 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 	public void resourceChanged(IResourceChangeEvent event) {
 		if (updateContinuously) {
 			// if update continuously is true, then typing will fire launches
-			//  which will save resources, so lets ignore all saves if update continuously is true.
-			return;
-		}
-		IResource eventResource = event.getResource();
-		if ((eventResource == null) || (eventResource.getType() != IResource.FILE)) {
-			return;
-		}
-		
-		IResource targetResource = currentModel.getSourceClass().findPrimaryType().getResource();
-		if (!(targetResource.equals(eventResource))) {
-			// not the same resource...
+			// which will save resources, so lets ignore all saves if update
+			// continuously is true.
 			return;
 		}
 
-		// hokay, we got a save event!
-		// DEBUG
-		Console.msg("ResourceChanged: the resource of the currentModel match the resource changed: " + eventResource.getName());
-		update();
-		
+		IResource targetResource = currentModel.getSourceClass()
+				.findPrimaryType().getResource();
+		try {
+			event.getDelta().accept(new DeltaVisitor(targetResource, this));
+		} catch (CoreException e) {
+			Console.err(e);
+		}
+
 	}
 
 	
