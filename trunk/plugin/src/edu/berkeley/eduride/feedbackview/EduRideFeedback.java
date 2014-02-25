@@ -12,10 +12,12 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 import edu.berkeley.eduride.base_plugin.isafile.ISAUtil;
+import edu.berkeley.eduride.base_plugin.util.Console;
 import edu.berkeley.eduride.base_plugin.util.IPartListenerInstaller;
 import edu.berkeley.eduride.feedbackview.controller.CodeStepCreatedListener;
 import edu.berkeley.eduride.feedbackview.controller.FeedbackController;
@@ -53,7 +55,12 @@ public class EduRideFeedback extends AbstractUIPlugin {
 		super.start(context);
 		plugin = this;
 		
-		//JavaCore.addElementChangedListener(new JavaFeedbackListener());
+		// Get things started somehow...
+		if (!PlatformUI.isWorkbenchRunning()) {
+			// huh.  What now?
+			Console.err("Workbench not running as FeedbackView tries to initialize...");
+		}
+		
 		initController();
 	}
 
@@ -121,7 +128,6 @@ public class EduRideFeedback extends AbstractUIPlugin {
 			// whoa, early startup wasn't done?
 			cscListener = new CodeStepCreatedListener();
 		}
-
 		
 		// TODO -- worry if things happen while the 4 following steps are partially taken?
 		
@@ -134,7 +140,10 @@ public class EduRideFeedback extends AbstractUIPlugin {
 		JavaCore.addElementChangedListener(controller);
 		
 		// install on Editors for open events
-		IPartListenerInstaller.installOnWorkbench(controller, "Feedback");
+		String failStr = IPartListenerInstaller.installOnWorkbench(controller, "Feedback");
+		if (failStr != null) {
+			Console.err("initController listener install failure: " + failStr);
+		}
 		// TODO deal with editors already opened?
 		
 		// get Resource change events (file saves)

@@ -77,9 +77,9 @@ public class FeedbackView extends ViewPart {
 	private Composite viewParent;
 	private TableViewer viewer;
 
-	private PageBook pagebook;
-	private TableViewer tableviewer;
-	private TextViewer textviewer;
+//	private PageBook pagebook;
+//	private TableViewer tableviewer;
+//	private TextViewer textviewer;
 
 	// buttons at the upper right of the view
 	private ActionToggle updateContinuously;
@@ -110,22 +110,21 @@ public class FeedbackView extends ViewPart {
 		contributeToActionBars();
 
 		// the PageBook allows simple switching between two viewers
-		pagebook = new PageBook(parent, SWT.NONE);
-
-		tableviewer = new TableViewer(pagebook, SWT.NONE);
-		tableviewer.setLabelProvider(new WorkbenchLabelProvider());
-		tableviewer.setContentProvider(new ArrayContentProvider());
+//		pagebook = new PageBook(parent, SWT.NONE);
+//
+//		tableviewer = new TableViewer(pagebook, SWT.NONE);
+//		tableviewer.setLabelProvider(new WorkbenchLabelProvider());
+//		tableviewer.setContentProvider(new ArrayContentProvider());
 
 		// we're cooperative and also provide our selection
 		// at least for the tableviewer
-		getSite().setSelectionProvider(tableviewer);
+//		getSite().setSelectionProvider(tableviewer);
 
-		textviewer = new TextViewer(pagebook, SWT.H_SCROLL | SWT.V_SCROLL);
-		textviewer.setEditable(false);
+//		textviewer = new TextViewer(pagebook, SWT.H_SCROLL | SWT.V_SCROLL);
+//		textviewer.setEditable(false);
 
 		
-		getSite().getWorkbenchWindow().getSelectionService()
-				.addSelectionListener(listener);
+//		getSite().getWorkbenchWindow().getSelectionService().addSelectionListener(listener);
 		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().layout(true, true);
 
 	
@@ -221,7 +220,7 @@ public class FeedbackView extends ViewPart {
 			}
 		});
 		/***********/
-		// grey out the titles
+		// TODO grey out the titles
 	}
 
 	
@@ -248,57 +247,57 @@ public class FeedbackView extends ViewPart {
 	 * Selection stuff
 	 */
 	
-	// the listener we register with the selection service
-	private ISelectionListener listener = new ISelectionListener() {
-		public void selectionChanged(IWorkbenchPart sourcepart,
-				ISelection selection) {
-			// we ignore our own selections
-			if (sourcepart != FeedbackView.this) {
-				showSelection(sourcepart, selection);
-			}
-		}
-	};
-
-	/**
-	 * Shows the given selection in this view.
-	 */
-	public void showSelection(IWorkbenchPart sourcepart, ISelection selection) {
-		// setContentDescription(sourcepart.getTitle() + " (" +
-		// selection.getClass().getName() + ")");
-		if (selection instanceof IStructuredSelection) {
-			IStructuredSelection ss = (IStructuredSelection) selection;
-			showItems(ss.toArray());
-		}
-		if (selection instanceof ITextSelection) {
-			ITextSelection ts = (ITextSelection) selection;
-			showText(ts.getText());
-		}
-		if (selection instanceof IMarkSelection) {
-			IMarkSelection ms = (IMarkSelection) selection;
-			try {
-				showText(ms.getDocument().get(ms.getOffset(), ms.getLength()));
-			} catch (BadLocationException ble) {
-			}
-		}
-	}
-
-	private void showItems(Object[] items) {
-		tableviewer.setInput(items);
-		pagebook.showPage(tableviewer.getControl());
-	}
-
-	private void showText(String text) {
-		textviewer.setDocument(new Document(text));
-		pagebook.showPage(textviewer.getControl());
-	}
-
-	public void dispose() {
-		// important: We need do unregister our listener when the view is
-		// disposed
-		getSite().getWorkbenchWindow().getSelectionService()
-				.removeSelectionListener(listener);
-		super.dispose();
-	}
+//	// the listener we register with the selection service
+//	private ISelectionListener listener = new ISelectionListener() {
+//		public void selectionChanged(IWorkbenchPart sourcepart,
+//				ISelection selection) {
+//			// we ignore our own selections
+//			if (sourcepart != FeedbackView.this) {
+//				showSelection(sourcepart, selection);
+//			}
+//		}
+//	};
+//
+//	/**
+//	 * Shows the given selection in this view.
+//	 */
+//	public void showSelection(IWorkbenchPart sourcepart, ISelection selection) {
+//		// setContentDescription(sourcepart.getTitle() + " (" +
+//		// selection.getClass().getName() + ")");
+//		if (selection instanceof IStructuredSelection) {
+//			IStructuredSelection ss = (IStructuredSelection) selection;
+//			showItems(ss.toArray());
+//		}
+//		if (selection instanceof ITextSelection) {
+//			ITextSelection ts = (ITextSelection) selection;
+//			showText(ts.getText());
+//		}
+//		if (selection instanceof IMarkSelection) {
+//			IMarkSelection ms = (IMarkSelection) selection;
+//			try {
+//				showText(ms.getDocument().get(ms.getOffset(), ms.getLength()));
+//			} catch (BadLocationException ble) {
+//			}
+//		}
+//	}
+//
+//	private void showItems(Object[] items) {
+//		tableviewer.setInput(items);
+//		pagebook.showPage(tableviewer.getControl());
+//	}
+//
+//	private void showText(String text) {
+//		textviewer.setDocument(new Document(text));
+//		pagebook.showPage(textviewer.getControl());
+//	}
+//
+//	public void dispose() {
+//		// important: We need do unregister our listener when the view is
+//		// disposed
+//		getSite().getWorkbenchWindow().getSelectionService()
+//				.removeSelectionListener(listener);
+//		super.dispose();
+//	}
 
 	
 	
@@ -326,6 +325,7 @@ public class FeedbackView extends ViewPart {
 			table.setForeground(black);
 			viewer.setInput(results.getResults());
 		} else {
+			// Did not compile
 			title = "(Compilation Errors) " + title;
 			table.setBackground(gray);
 			table.setForeground(gray);
@@ -380,7 +380,7 @@ public class FeedbackView extends ViewPart {
 	 */
 	public void setFocus() {
 		viewer.getControl().setFocus();
-		pagebook.setFocus();
+//		pagebook.setFocus();
 	}
 	
 	
