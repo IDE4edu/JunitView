@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ElementChangedEvent;
 import org.eclipse.jdt.core.IElementChangedListener;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.compiler.IProblem;
@@ -429,8 +430,9 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 			return;
 		}
 
-		IResource targetResource = currentModel.getSourceClass()
-				.findPrimaryType().getResource();
+		ITypeRoot src = currentModel.getSourceClass();
+		IType prim = src.findPrimaryType();
+		IResource targetResource = prim.getResource();
 		try {
 			event.getDelta().accept(new DeltaVisitor(targetResource, this));
 		} catch (CoreException e) {
