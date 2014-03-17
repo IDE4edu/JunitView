@@ -83,6 +83,7 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 	}
 
 
+	// are we in the middle of updating the model?
 	private boolean currentlyProcessing = false;
 	
 	
@@ -112,6 +113,8 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 		// DEBUG
 		if (model != null) {
 			Console.msg("Told to follow " + source.getElementName() + " so setting up model on " + model.getTestClass().getElementName());
+		} else {
+			//Console.msg("The model for " + source.getElementName() + " is null (is it in a X.isa file?), so I can't follow");
 		}
 	}
 
@@ -168,17 +171,23 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 	 */
 	public void update() {
 		currentlyProcessing = true;
-		updateModel(currentModel);
-		
-		// TODO 
-		// show this every update? 
-		// Or, check if the view is visible first, and only update if it is?
-		// do this in refreshView()?
-		EduRideFeedback.asyncShowFeedbackView();
-		
-		
-		// DEBUG
-		Console.msg("Starting update on model of " + currentModel.getTestClass().getElementName());
+		// currentModel might be null?  I'd be nice if this never happened.
+		if (currentModel != null) {
+			updateModel(currentModel);
+			// TODO 
+			// show this every update? 
+			// Or, check if the view is visible first, and only update if it is?
+			// do this in refreshView()?
+			EduRideFeedback.asyncShowFeedbackView();
+			
+			// DEBUG
+			Console.msg("Starting update on model of " + currentModel.getTestClass().getElementName());
+		} else {
+			// model was null
+			// likely, we're here because the user is editing a file that doesn't have a feedback model 
+			//  (because it isn't in an ISA).  It would be nice if we could never get here, eh?
+			Console.err("Asked to update when the current feedback model is null; I don't know how to update the current source file");
+		}
 	}
 	
 	/*
@@ -429,7 +438,12 @@ public class FeedbackController implements IElementChangedListener, IPartListene
 			// continuously is true.
 			return;
 		}
-
+		// there is no feedback model for this resource, so just return
+		if (currentModel == null) {
+			return;
+		}
+		
+		
 		ITypeRoot src = currentModel.getSourceClass();
 		IType prim = src.findPrimaryType();
 		IResource targetResource = prim.getResource();
