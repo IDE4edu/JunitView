@@ -5,6 +5,7 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.junit.launcher.JUnitLaunchShortcut;
 
+
 public class FeedbackLaunchConfigurationShortcut extends JUnitLaunchShortcut {
 
 	@Override
